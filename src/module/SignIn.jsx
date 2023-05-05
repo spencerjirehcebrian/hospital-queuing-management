@@ -3,8 +3,14 @@ import { HiOutlineEyeOff, HiOutlineEye } from "react-icons/hi";
 import { Link } from 'react-router-dom';
 import OAuth from '../components/OAuth'
 
+import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
+import { useNavigate } from "react-router-dom";
+import {toast} from 'react-toastify'
+
 
 export default function SignIn() {
+
+  const navigate = useNavigate()
 
   const [formData, setFormData] = useState({
     email: "",
@@ -22,6 +28,23 @@ function onChange(e) {
 
 const { email, password } = formData;
 
+async function onSubmit(e) {
+  e.preventDefault();
+
+  try {
+    const auth = getAuth()
+    const userCredential = await signInWithEmailAndPassword(auth, email, password)
+
+    if(userCredential.user) {
+      toast.success("Signed In");
+      navigate('/');
+    }
+    
+  } catch (error) {
+    console.log(error);
+    toast.error("Invalid username or password");
+  }
+}
 
   return (
 <section>
@@ -35,7 +58,7 @@ const { email, password } = formData;
     </div>
     
     <div className="w-full md:w-[70%] lg:w-[40%] lg:ml-20">
-      <form>
+      <form onSubmit={onSubmit}>
         <input className="w-full px-4 py-2 text-lg text-gray-700 bg-white border-gray-300 rounded transition ease-in-out" 
         type="email" 
         id="email"
@@ -70,17 +93,9 @@ const { email, password } = formData;
       <button className='w-full bg-amber-700 text-white px-7 py-3 text-sm font-medium uppercase rounded shadow-md 
       hover:bg-amber-800 transition duration-150 ease-in-out hover:shadow-lg active:bg-amber-900'
       type='submit'> SIGN IN</button>
-
-      <div className='my-4 before:border-t flex before:flex-1 items-center before:border-gray-300 
-      after:border-t after:flex-1 after:border-gray-300'>
-        <p className='text-center font-semibold mx-4'>
-          OR
-        </p>
-      </div>
+      </form>
 
         <OAuth />
-
-      </form>
     </div>
   </div>
 </section>

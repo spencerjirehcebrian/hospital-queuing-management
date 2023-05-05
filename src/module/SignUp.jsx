@@ -56,7 +56,7 @@ async function onSubmit(e) {
     formDataCopy.isAdmin = false;
 
     await setDoc(doc(db, "users", id.uid), formDataCopy);
-    toast.done("Successfully Signed Up")
+    toast.success("Successfully Signed Up")
 
     navigate("/sign-in")
 
@@ -147,16 +147,8 @@ const { name, dob, sex, email, password } = formData;
       hover:bg-amber-800 transition duration-150 ease-in-out hover:shadow-lg active:bg-amber-900'
       type='submit'> SIGN UP</button>
 
-      <div className='my-4 before:border-t flex before:flex-1 items-center before:border-gray-300 
-      after:border-t after:flex-1 after:border-gray-300'>
-        <p className='text-center font-semibold mx-4'>
-          OR
-        </p>
-      </div>
-
-        <OAuth />
-
       </form>
+        <OAuth />
     </div>
   </div>
 </section>
