@@ -1,15 +1,27 @@
 
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Home from './module/Home';
-import SignIn from './module/SignIn';
-import SignUp from './module/SignUp';
-import Profile from './module/Profile';
+import Home from './modules/Home';
+import SignIn from './modules/SignIn';
+import SignUp from './modules/SignUp';
+import Profile from './modules/Profile';
 import Header from './components/Header';
 
 import PrivateRoute from './components/PrivateRoute';
 
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+
+import Schedules from './modules/Schedules';
+import CreateSchedules from './modules/CreateSchedule';
+import EditSchedules from './modules/EditSchedule';
+
+import Patients from './modules/Patients';
+import CreatePatient from './modules/CreatePatient';
+import EditPatient from './modules/EditPatient';
+
+import Billing from './modules/Billing';
+import CreateBills from './modules/CreateBills';
+
 function App() {
   return (
     <>
@@ -20,6 +32,17 @@ function App() {
           <Route path="/sign-in" element={<SignIn/>}/>
           <Route path="/sign-up" element={<SignUp/>}/>
 
+          <Route path="/schedules" element={<Schedules/>}/>
+          <Route path="/create-schedule" element={<CreateSchedules/>}/>
+          <Route path="/edit-schedule/:scheduleID" element={<EditSchedules/>}/>
+
+          <Route path="/patients" element={<Patients/>}/>
+          <Route path="/create-patient" element={<CreatePatient/>}/>
+          <Route path="/edit-patient/:patientID" element={<EditPatient/>}/>
+
+          <Route path="/billing" element={<Billing/>}/>
+          <Route path="/create-bills" element={<CreateBills/>}/>
+
           <Route path='/profile' element={<PrivateRoute />}>
             <Route path="/profile" element={<Profile/>}/>
           </Route>
@@ -27,8 +50,8 @@ function App() {
         </Routes>
       </Router>
       <ToastContainer
-        position="top-right"
-        autoClose={5000}
+        position="bottom-right"
+        autoClose={3000}
         hideProgressBar={false}
         newestOnTop={false}
         closeOnClick

@@ -2,10 +2,15 @@ import React, { useState } from 'react'
 import { HiOutlineEyeOff, HiOutlineEye } from "react-icons/hi";
 import { Link } from 'react-router-dom';
 import OAuth from '../components/OAuth'
+
+import Spinner from "../components/Spinner";
+
+
 import {
   getAuth,
   createUserWithEmailAndPassword,
   updateProfile,
+  setPersistence, browserLocalPersistence, browserSessionPersistence    
 } from "firebase/auth";
 import { db } from "../firebase/firebase";
 import { doc, serverTimestamp, setDoc } from "firebase/firestore";
@@ -13,74 +18,79 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
 
-export default function SignUp() {
+export default function CreatePatient() {
+    const [loading, setLoading] = useState(false);
+    const [formData, setFormData] = useState({
+        name: "",
+        dob: "",
+        sex: "",
+        email: "",
+        password: "",
+    });
 
-  const [formData, setFormData] = useState({
-    name: "",
-    dob: "",
-    sex: "",
-    email: "",
-    password: "",
-  });
+    const [showPassword, setShowPassword] = useState(false);
+    const [startDOB, setStartDOB] = useState(false);
 
-  const [showPassword, setShowPassword] = useState(false);
-  const [startDOB, setStartDOB] = useState(false);
+    function onChange(e) {
+    setFormData((prevState) => ({
+        ...prevState,
+        [e.target.id]: e.target.value,
+    }))
+    }
 
-function onChange(e) {
-  setFormData((prevState) => ({
-    ...prevState,
-    [e.target.id]: e.target.value,
-  }))
-}
+    const navigate = useNavigate()
 
-const navigate = useNavigate()
+    async function onSubmit(e) {
+    e.preventDefault();
+    setLoading(true)
 
-async function onSubmit(e) {
-  e.preventDefault();
+    try {
+        const auth = getAuth()
+        
+        updateProfile(auth.currentUser, {
+        displayName: name,
+        })
 
-  try {
-    const auth = getAuth()
-    const userCredential = await createUserWithEmailAndPassword(auth, email, password)
+        await setPersistence(auth, browserSessionPersistence);
 
-    updateProfile(auth.currentUser, {
-      displayName: name,
-    })
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password)
 
-    const user = userCredential.user
-    console.log(user);
-    const id = auth.currentUser
-    const formDataCopy = {...formData}
-    delete formDataCopy.password
-    
-    formDataCopy.timestamp = serverTimestamp();
-    formDataCopy.isAdmin = false;
+        const user = userCredential.user
+        console.log(user);
+        const id = auth.currentUser
+        const formDataCopy = {...formData}
+        delete formDataCopy.password
+        
+        formDataCopy.timestamp = serverTimestamp();
+        formDataCopy.isAdmin = false;
+        formDataCopy.isPatient = true;
 
-    await setDoc(doc(db, "users", id.uid), formDataCopy);
-    toast.success("Successfully Signed Up")
+        await setDoc(doc(db, "users", id.uid), formDataCopy);
+        setLoading(false)
+        toast.success("Successfully Registered Up")
 
-    navigate("/sign-in")
+        navigate("/profile")
 
-  } catch (error) {
-    console.log(error);
-    toast.error("Something went wrong");
-  }
-}
+    } catch (error) {
+        console.log(error);
+        setLoading(false)
+        toast.error("Something went wrong");
+    }
+    }
 
-const { name, dob, sex, email, password } = formData;
+    const { name, dob, sex, email, password } = formData;
 
+    if (loading) {
+        return <Spinner />;
+    }
 
   return (
 <section>
 
-  <h1 className='text-3xl text-center mt-6 font-bold'>Sign Up</h1>
+  <h1 className='text-3xl text-center mt-6 font-bold'>Register a Patient</h1>
   <div className='flex justify-center flex-wrap items-center px-6 py-12 max-w-6xl mx-auto'>
-    <div className='md:w-[67%] lg:w-[50%] mb-12 md:mb-6'>
-      <img src="https://images.unsplash.com/photo-1526256262350-7da7584cf5eb?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80"
-      alt='splash screen'
-      className='w-full rounded-2xl'/>
-    </div>
     
-    <div className="w-full md:w-[70%] lg:w-[40%] lg:ml-20">
+    <div className="w-full md:w-[40%] lg:w-[50%]">
       <form onSubmit={onSubmit}>
       <input className="w-full mb-6 px-4 py-2 text-lg text-gray-700 bg-white border-gray-300 rounded transition ease-in-out" 
         type="text" 
@@ -110,8 +120,6 @@ const { name, dob, sex, email, password } = formData;
         <option className=" text-gray-700" value="female">Female</option>
       </select>
     
-      
-
         <input className="w-full mb-6 px-4 py-2 text-lg text-gray-700 bg-white border-gray-300 rounded transition ease-in-out" 
         type="email" 
         id="email"
@@ -138,17 +146,10 @@ const { name, dob, sex, email, password } = formData;
         }
       </div>
 
-      <div className='flex justify-between whitespace-nowrap text-sm sm:text-lg '>
-        <p className='mb-6 text-base'>Have an Account? 
-        <Link to="/sign-in" className='text-green-400 hover:text-green-600 transition duration-200 ease-in-out'> Sign In Here</Link></p>
-      </div>
-
       <button className='w-full bg-amber-700 text-white px-7 py-3 text-sm font-medium uppercase rounded shadow-md 
       hover:bg-amber-800 transition duration-150 ease-in-out hover:shadow-lg active:bg-amber-900'
-      type='submit'> SIGN UP</button>
-
+      type='submit'>Register then Sign In as Patient</button>
       </form>
-        <OAuth />
     </div>
   </div>
 </section>

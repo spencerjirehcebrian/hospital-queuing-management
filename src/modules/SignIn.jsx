@@ -7,8 +7,12 @@ import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
 import { useNavigate } from "react-router-dom";
 import {toast} from 'react-toastify'
 
+import Spinner from "../components/Spinner";
+
 
 export default function SignIn() {
+
+  const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate()
 
@@ -30,6 +34,7 @@ const { email, password } = formData;
 
 async function onSubmit(e) {
   e.preventDefault();
+  setLoading(true)
 
   try {
     const auth = getAuth()
@@ -37,13 +42,19 @@ async function onSubmit(e) {
 
     if(userCredential.user) {
       toast.success("Signed In");
+      setLoading(false)
       navigate('/');
     }
     
   } catch (error) {
     console.log(error);
+    setLoading(false)
     toast.error("Invalid username or password");
   }
+}
+
+if (loading) {
+  return <Spinner />;
 }
 
   return (
