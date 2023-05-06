@@ -2,9 +2,9 @@ import {useEffect, useState} from 'react'
 import { toast } from "react-toastify";
 
 import { getAuth } from "firebase/auth";
-import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+import { addDoc, collection, serverTimestamp, doc, updateDoc, getDoc, deleteDoc } from "firebase/firestore";
 import { db } from "../firebase/firebase";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import TimePicker from 'react-time-picker';
 import 'react-time-picker/dist/TimePicker.css';
 import 'react-clock/dist/Clock.css';
@@ -13,6 +13,34 @@ export default function CreateBills() {
     const [loading, setLoading] = useState(false);
     const auth = getAuth()
     const navigate = useNavigate()
+    const params =  useParams();
+
+    useEffect(() => {
+        setLoading(true);
+        async function fetchListing() {
+          const docRef = doc(db, "bills", params.billID);
+          const docSnap = await getDoc(docRef);
+          if (docSnap.exists()) {
+            setFormData({...docSnap.data()});
+            setLoading(false);
+          } else {
+            navigate("/billing");
+            toast.error("Bill does not exist");
+          }
+        }
+        fetchListing();
+    }, [navigate, params.billID]);
+
+    async function onDeleteClick() {
+        try {
+        const documentRef = doc(db, 'bills', params.billID);
+        await deleteDoc(documentRef);
+          toast.success("Bill successfully deleted!");
+          navigate("/billing");
+        }catch (error){
+          toast.error("Error deleting bills: ", error);
+        }
+      }
 
 
     const [formData, setFormData] = useState({
@@ -48,13 +76,14 @@ export default function CreateBills() {
         e.preventDefault();
         setLoading(true);
 
-
         try {
-
-        await addDoc(collection(db, "bills"), formData);
-        setLoading(false);
-        toast.success("Customer Charged");
-        navigate("/billing")
+            const docRef = doc(db, "bills", params.billID);
+            await updateDoc(docRef, {
+                ...formData,
+            });
+            setLoading(false);
+            toast.success("Bill Updated");
+            navigate("/billing")
         }
 
         catch (error) {
@@ -67,7 +96,7 @@ export default function CreateBills() {
   return (
     <>
         <main className="max-w-md px-2 mx-auto">
-      <h1 className="text-3xl text-center mt-6 font-bold">Charge a Customer</h1>
+      <h1 className="text-3xl text-center mt-6 font-bold">Update Billing</h1>
       <form onSubmit={onSubmit}>
         
         <p className="text-lg mt-6 font-semibold">Bill Name</p>
@@ -181,9 +210,18 @@ export default function CreateBills() {
         hover:bg-green-700 hover:shadow-lg focus:bg-green-700 focus:shadow-lg
         active:bg-green-800 active:shadow-lg transition duration-150 ease-in-out"
     >
-      Charge Customer
+      Update Bill
     </button>
       </form>
+
+      <button
+      type="submit"
+      className="mb-6 w-full px-7 py-2 bg-amber-600 text-white font-medium text-sm uppercase rounded shadow-md
+        hover:bg-amber-700 hover:shadow-lg focus:bg-amber-700 focus:shadow-lg
+        active:bg-amber-800 active:shadow-lg transition duration-150 ease-in-out"
+      onClick={onDeleteClick}>
+      Delete Bill
+    </button>
     </main>
     </>
   )

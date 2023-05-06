@@ -4,9 +4,9 @@ import { db } from "../firebase/firebase";
 import { useNavigate } from "react-router-dom";
 import Spinner from "../components/Spinner";
 
-function BillingList() {
+function QueueList() {
 
-    const [bills, setBills] = useState([]);
+    const [queues, setQueues] = useState([]);
     const navigate = useNavigate()
     const [loading, setLoading] = useState(false);
 
@@ -17,29 +17,29 @@ function BillingList() {
       if (searchTerm){
       const q = searchTerm
         ? query(
-            collection(db, 'bills'),
-            where('billName', '>=', searchTerm),
-            where('billName', '<=', searchTerm + '\uf8ff')
+            collection(db, 'queue'),
+            where('number', '>=', searchTerm),
+            where('number', '<=', searchTerm + '\uf8ff')
           )
-        : collection(db, 'bills', orderBy('billName'));
+        : collection(db, 'queue', orderBy('name'));
   
       const unsubscribe = onSnapshot(q, (snapshot) => {
-        const schedulesData = snapshot.docs.map((doc) => ({
+        const queuesData = snapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),
         }));
-        setBills(schedulesData);
+        setQueues(queuesData);
 
       });
       return unsubscribe;
       
       } else {
-          const unsubscribe = onSnapshot(collection(db, 'bills'), (snapshot) => {
+          const unsubscribe = onSnapshot(collection(db, 'queue'), (snapshot) => {
           const schedulesData = snapshot.docs.map((doc) => ({
             id: doc.id,
             ...doc.data(),
           }));
-          setBills(schedulesData);
+          setQueues(schedulesData);
 
         });
         return unsubscribe;
@@ -60,28 +60,23 @@ function BillingList() {
           Search
         </label>
         <input
-          type="text"
+          type="number"
           id="search"
           className="w-full px-4 py-2 rounded-lg shadow"
-          placeholder="Search by billing name"
+          placeholder="Search by queue number"
           value={searchTerm}
           onChange={handleSearch}
         />
       </div>
 
-      <div className="grid grid-cols-3 gap-4">
-        {bills.map((bill) => (
-          <div key={bill.id} 
+      <div className="grid grid-cols-1 gap-4">
+        {queues.map((queue) => (
+          <div key={queue.id} 
           className="bg-white p-4 rounded-lg shadow cursor-pointer"
-          onClick={()=>navigate(`/edit-bills/${bill.id}`)}>
-            <h2 className="text-xl font-semibold">{bill.billName}</h2>
-            <p><span className="font-semibold">Appointment ID: </span> {bill.appointmentID}</p>
-            <p><span className="font-semibold">Patient ID: </span> {bill.patientID}</p>
-            <p><span className="font-semibold">Customer Name: </span> {bill.customerName}</p>
-            <p><span className="font-semibold">Customer Email: </span> {bill.customerEmail}</p>
-            <p><span className="font-semibold">Total Due: </span> PHP {bill.totalDue}</p>
-            <p><span className="font-semibold">Bill Description: </span> {bill.billDescription}</p>
-            <p><span className="font-semibold">Bill Status: </span> {bill.billStatus}</p>
+          onClick={()=>navigate(`/edit-appointment/${queue.id}`)}>
+            <h2 className="text-xl font-semibold">{queue.name}</h2>
+            <p><span className="font-semibold">Doctor Name: </span> {queue.doctorName}</p>
+            <p><span className="font-semibold">Time Slot</span>: {queue.startTime} - {queue.endTime}</p>
           </div>
         ))}
       </div>
@@ -89,4 +84,4 @@ function BillingList() {
   )
 }
 
-export default BillingList
+export default QueueList

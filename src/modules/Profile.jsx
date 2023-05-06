@@ -158,13 +158,13 @@ export default function Profile() {
 
 
             
-            <button className='mb-6 w-full bg-green-700 text-white px-7 py-3 text-sm font-medium uppercase rounded shadow-md 
+            {/* <button className='mb-6 w-full bg-green-700 text-white px-7 py-3 text-sm font-medium uppercase rounded shadow-md 
             hover:bg-green-800 transition duration-150 ease-in-out hover:shadow-lg active:bg-green-900'
             >EDIT DETAILS</button>
 
             <button className='mb-6 w-full bg-green-700 text-white px-7 py-3 text-sm font-medium uppercase rounded shadow-md 
             hover:bg-green-800 transition duration-150 ease-in-out hover:shadow-lg active:bg-green-900'
-            type='submit'>SAVE</button>
+            type='submit'>SAVE</button> */}
 
             <button className='mb-6 w-full bg-amber-700 text-white px-7 py-3 text-sm font-medium uppercase rounded shadow-md 
             hover:bg-amber-800 transition duration-150 ease-in-out hover:shadow-lg active:bg-amber-900'

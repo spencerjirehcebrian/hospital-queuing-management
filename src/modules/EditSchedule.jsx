@@ -3,7 +3,7 @@ import { toast } from "react-toastify";
 import Spinner from "../components/Spinner";
 
 import { getAuth } from "firebase/auth";
-import { addDoc, collection, serverTimestamp, doc, updateDoc, getDoc } from "firebase/firestore";
+import { addDoc, collection, serverTimestamp, doc, updateDoc, getDoc, deleteDoc } from "firebase/firestore";
 import { db } from "../firebase/firebase";
 import { useNavigate, useParams } from "react-router-dom";
 import TimePicker from 'react-time-picker';
@@ -92,6 +92,17 @@ export default function EditSchedules() {
         }));
       }
 
+    }
+    
+    async function onDeleteClick() {
+      try {
+      const documentRef = doc(db, 'schedules', params.scheduleID);
+      await deleteDoc(documentRef);
+        toast.success("Document successfully deleted!");
+        navigate("/schedules");
+      }catch (error){
+        toast.error("Error deleting document: ", error);
+      }
     }
 
     async function onSubmit(e) {
@@ -280,6 +291,15 @@ export default function EditSchedules() {
       Save Changes
     </button>
       </form>
+
+      <button
+      type="submit"
+      className="mb-6 w-full px-7 py-2 bg-amber-600 text-white font-medium text-sm uppercase rounded shadow-md
+        hover:bg-amber-700 hover:shadow-lg focus:bg-amber-700 focus:shadow-lg
+        active:bg-amber-800 active:shadow-lg transition duration-150 ease-in-out"
+      onClick={onDeleteClick}>
+      Delete Schedule
+    </button>
     </main>
     </>
   )

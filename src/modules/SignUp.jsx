@@ -116,8 +116,8 @@ if (loading) {
          ${sex|| "text-gray-700"}`}
       >
         <option className=" text-gray-400" value="" disabled selected hidden>--Please choose a Sex--</option>
-        <option className=" text-gray-700" value="male">Male</option>
-        <option className=" text-gray-700" value="female">Female</option>
+        <option className=" text-gray-700" value="Male">Male</option>
+        <option className=" text-gray-700" value="Female">Female</option>
       </select>
     
       

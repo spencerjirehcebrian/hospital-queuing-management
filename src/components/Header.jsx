@@ -46,7 +46,7 @@ export default function Header() {
 
                     {loggedIn && (isAdmin && (<li className={`py-3 text-sm text-center font-semibold text-gray-400 border-b-[5px] cursor-pointer border-transparent transition duration-300
                     ${pathMatchRoute("/queue") && "text-gray-900 border-b-green-500"}`}
-                    onClick={()=> navigate("/queue")}>Queue</li>))}
+                    onClick={()=> navigate("/queue")}>Appointment Queue</li>))}
 
                     {loggedIn && (isAdmin && (<li className={`py-3 text-sm text-center font-semibold text-gray-400 border-b-[5px] cursor-pointer border-transparent transition duration-300
                         ${pathMatchRoute("/schedules") && "text-gray-900 border-b-green-500"}`}

@@ -21,6 +21,10 @@ import EditPatient from './modules/EditPatient';
 
 import Billing from './modules/Billing';
 import CreateBills from './modules/CreateBills';
+import EditBills from './modules/EditBills';
+
+import Queue from './modules/Queue';
+import CreateQueue from './modules/CreateQueue';
 
 function App() {
   return (
@@ -42,6 +46,10 @@ function App() {
 
           <Route path="/billing" element={<Billing/>}/>
           <Route path="/create-bills" element={<CreateBills/>}/>
+          <Route path="/edit-bills/:billID" element={<EditBills/>}/>
+
+          <Route path="/queue" element={<Queue/>}/>
+          <Route path="/create-queue" element={<CreateQueue/>}/>
 
           <Route path='/profile' element={<PrivateRoute />}>
             <Route path="/profile" element={<Profile/>}/>
