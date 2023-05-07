@@ -1,5 +1,6 @@
 import {useEffect, useState} from 'react'
 import { toast } from "react-toastify";
+import Spinner from "../components/Spinner";
 
 import { getAuth } from "firebase/auth";
 import { addDoc, collection, serverTimestamp,query,orderBy,limit,getDocs,where, onSnapshot, doc, getDoc, Firestore } from "firebase/firestore";
@@ -58,40 +59,46 @@ export default function CreateQueue() {
         queueStatus
     } = formData;
 
-    const getHighestScore = async () => {
-        const usersRef = collection(db, "queue");
-        const q = query(usersRef, orderBy("queueNumber", "desc"), limit(1));
-        const querySnapshot = await getDocs(q);
-      
-        if (querySnapshot.size === 0) {
-          return 0;
-        } else {
-          const highestScore = querySnapshot.docs[0].data().score;
-
-          return highestScore;
-        }
-    };
-
-    const formatDate = (date) => {
-      const year = date.getFullYear();
-      const month = (date.getMonth() + 1).toString().padStart(2, "0");
-      const day = date.getDate().toString().padStart(2, "0");
-      return `${month}/${day}/${year}`;
-    };
-
     useEffect(() => {
-      setCurrQueueNum(getHighestScore())
-      setNewQueueNum(currQueueNum + 1)
-      //console.log(newQueueNum)
+      const getUsers = async () => {
+        try {
+          setLoading(true);
+          const usersRef = collection(db, "queue");
+          const q = query(usersRef, orderBy("queueNumber", "desc"), limit(1));
+          const q1 = doc(db, "users", auth.currentUser.uid);
+          const [queueSnapshot, userSnapshot] = await Promise.all([
+            getDocs(q),
+            getDoc(q1)
+          ]);
 
-      onDateChange()
+          if (queueSnapshot.size === 0) {
+              const newData = {
+                  ...formData,
+                  queueNumber: 1,
+                  };
+              setFormData(newData);
+          } else {
+              if (userSnapshot.exists()) {
+                  const highestScore = queueSnapshot.docs[0].data().queueNumber;
+                  const newNum1 = highestScore + 1;
 
-      const newData = {
-        ...formData,
-        queueNumber: newQueueNum,
-      }
-
-      setFormData(newData)
+                  const newData = {
+                      ...formData ,
+                          queueNumber: newNum1,
+                          patientID: auth.currentUser.uid,
+                          patientName: userSnapshot.data().name,
+                          patientEmail: userSnapshot.data().email
+                      };
+                  setFormData(newData);
+                  }
+          }
+          setLoading(false);
+        } catch (error) {
+          console.error(error);
+          setLoading(false);
+        }
+      };
+      getUsers();
     }, []);
 
     useEffect(() => {
@@ -173,15 +180,7 @@ export default function CreateQueue() {
         [e.target.id]: e.target.value,
       }));
     }
-    
-    function onDateChange() {
-      const formattedDate = formatDate(startDate);
-      setFormData(prevFormData => ({
-        ...prevFormData,
-        queueDate: formattedDate
-      }));
-      console.log(formattedDate)
-    }
+
 
     async function onSubmit(e) {
         e.preventDefault();
@@ -311,13 +310,13 @@ export default function CreateQueue() {
         />
 
         <p className="text-lg font-semibold">Appointment Date</p>
-        <DatePicker
-          type="text"
+        <input
+          type="date"
           id="queueDate"
           dateFormat="MM/dd/yyyy"
-          value={startDate}
-          selected={startDate}
-          onChange={onDateChange}
+          value={queueDate}
+          //selected={startDate}
+          onChange={onChange}
           placeholder="Appointment Date"
           required
           className="w-full px-4 py-2 text-lg text-gray-700 bg-white border border-gray-300 

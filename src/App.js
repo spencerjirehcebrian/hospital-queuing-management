@@ -30,6 +30,9 @@ import CreateAppointment from './modules/CreateAppointment';
 import Appointments from './modules/Appointments';
 import PatientHistory from './modules/PatientHistory';
 import StatementOfAccount from './modules/StatementOfAccount';
+import EditAppointment from './modules/EditAppointment';
+import ShowHistory from './modules/ShowHistory';
+import ShowStatementOfAccount from './modules/ShowStatementOfAccount';
 
 function App() {
   return (
@@ -43,12 +46,18 @@ function App() {
 
           <Route path="/create-appointment" element={<CreateAppointment/>}/>
           <Route path="/appointments" element={<Appointments/>}/>
+          <Route path="/edit-appointment/:appointmentID" element={<EditAppointment/>}/>
+
           <Route path="/patient-history" element={<PatientHistory/>}/>
+          <Route path="/show-history/:appointmentID" element={<ShowHistory/>}/>
+
           <Route path="/statement-of-account" element={<StatementOfAccount/>}/>
+          <Route path="/show-statement-of-account/:billID" element={<ShowStatementOfAccount/>}/>
 
           <Route path="/schedules" element={<Schedules/>}/>
           <Route path="/create-schedule" element={<CreateSchedules/>}/>
           <Route path="/edit-schedule/:scheduleID" element={<EditSchedules/>}/>
+ 
 
           <Route path="/patients" element={<Patients/>}/>
           <Route path="/create-patient" element={<CreatePatient/>}/>

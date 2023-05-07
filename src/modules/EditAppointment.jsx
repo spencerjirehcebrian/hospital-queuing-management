@@ -20,18 +20,13 @@ import SelectPatientList from '../functions/SelectPatientList';
 import SelectScheduleList from '../functions/SelectScheduleList';
 
 
-export default function EditQueue() {
+export default function EditAppointment() {
     const [loading, setLoading] = useState(false);
     const auth = getAuth()
     const navigate = useNavigate()
 
-    const [currQueueNum, setCurrQueueNum] = useState(0);
-    const [newQueueNum, setNewQueueNum] = useState(0);
-
-    const [startDate, setStartDate] = useState(new Date());
-
     const [formData, setFormData] = useState({
-        queueNumber: newQueueNum,
+        queueNumber: "",
         patientID: "",
         patientName: "",
         patientEmail: "",
@@ -58,31 +53,25 @@ export default function EditQueue() {
         queueStatus
     } = formData;
 
-    const formatDate = (date) => {
-      const year = date.getFullYear();
-      const month = (date.getMonth() + 1).toString().padStart(2, "0");
-      const day = date.getDate().toString().padStart(2, "0");
-      return `${month}/${day}/${year}`;
-    };
-
     const params =  useParams();
 
     useEffect(() => {
         setLoading(true);
 
         async function fetchListing() {
-          const docRef = doc(db, "queue", params.queueID);
+          const docRef = doc(db, "queue", params.appointmentID);
           const docSnap = await getDoc(docRef);
           if (docSnap.exists()) {
               setFormData({...docSnap.data()});
             setLoading(false);
           } else {
             navigate("/queue");
-            toast.error("Queue does not exist");
+            toast.error("Appointment does not exist");
           }
         }
+
         fetchListing();
-      }, [navigate, params.queueID]);
+    }, [navigate, params.appointmentID]);
 
     useEffect(() => {
         if (scheduleID) {
@@ -90,15 +79,6 @@ export default function EditQueue() {
             getDocs(q).then((querySnapshot) => {
             if (!querySnapshot.empty) {
               const doc = querySnapshot.docs[0].data();
-              //setResult(`Found document with ID ${scheduleID}. Field1: ${doc.startTime}, Field2: ${doc.endTime}`);
-
-              
-            //   setFormData({
-            //     ...formData,
-            //     scheduleStartTime: doc.startTime,
-            //     scheduleEndTime: doc.endTime,
-            //     doctorName: doc.doctorName
-            // })
 
             const newData = {
               ...formData,
@@ -163,15 +143,6 @@ export default function EditQueue() {
         [e.target.id]: e.target.value,
       }));
     }
-    
-    function onDateChange() {
-      const formattedDate = formatDate(startDate);
-      setFormData(prevFormData => ({
-        ...prevFormData,
-        queueDate: formattedDate
-      }));
-      console.log(formattedDate)
-    }
 
     async function onSubmit(e) {
         e.preventDefault();
@@ -179,13 +150,13 @@ export default function EditQueue() {
         setLoading(true);
         try {
           
-          const docRef = doc(db, "queue", params.queueID);
+          const docRef = doc(db, "queue", params.appointmentID);
             await updateDoc(docRef, {
             ...formData,
             });
           setLoading(false);
           toast.success("Changes Saved");
-          navigate("/queue")
+          navigate("/appointments")
           }
 
         catch (error) {
@@ -201,23 +172,13 @@ export default function EditQueue() {
             const documentRef = doc(db, 'queue', params.queueID);
             await deleteDoc(documentRef);
               toast.success("Successfully remove from Queue");
-              navigate("/queue");
+              navigate("/appointments");
               setLoading(false);
             }catch (error){
               toast.error("Error deleting document: ", error);
               setLoading(false);
             }
 
-    }
-
-    const [isPatientOpen, setIsPatientOpen] = useState(false);
-
-    function closePatientModal() {
-        setIsPatientOpen(false);
-    }
-
-    function openPatientModal() {
-        setIsPatientOpen(true);
     }
 
     const [isScheduleOpen, setIsScheduleOpen] = useState(false);
@@ -228,13 +189,6 @@ export default function EditQueue() {
 
     function openScheduleModal() {
         setIsScheduleOpen(true);
-    }
-
-    function getPatientID (e){
-        setFormData({
-          ...formData,
-          patientID: e
-      })
     }
 
     function getScheduleID (e){
@@ -268,17 +222,6 @@ export default function EditQueue() {
           className="w-full px-4 py-2 text-lg text-gray-700 bg-white border border-gray-300 
           rounded transition duration-150 ease-in-out focus:text-gray-700 focus:bg-white focus:border-slate-600 mb-6"
         />
-
-    <button
-     type="button"
-     onClick={openPatientModal}
-      className="mb-6 w-full px-7 py-2 bg-amber-700 text-white font-medium text-sm uppercase rounded shadow-md
-        hover:bg-amber-800 hover:shadow-lg focus:bg-amber-800 focus:shadow-lg
-        active:bg-amber-950 active:shadow-lg transition duration-150 ease-in-out"
-        >
-
-      Select Patient
-    </button>
 
         <p className="text-lg font-semibold">Patient ID</p>
         <input
@@ -324,7 +267,7 @@ export default function EditQueue() {
 
         <p className="text-lg font-semibold">Appointment Date</p>
         <input
-          type="text"
+          type="date"
           id="queueDate"
           dateFormat="MM/dd/yyyy"
           value={queueDate}
@@ -416,24 +359,6 @@ export default function EditQueue() {
           rounded transition duration-150 ease-in-out focus:text-gray-700 focus:bg-white focus:border-slate-600 mb-6"
         />
 
-
-        <p className="text-lg font-semibold">Queue Status</p>
-        <select
-        id="queueStatus"
-        value={queueStatus}
-        onChange={onChange}
-        className={`w-full mb-6 px-4 py-2 text-lg text-gray-500 bg-white border-gray-300 rounded transition ease-in-out
-         `}
-      >
-        <option className=" text-gray-400" value="" disabled selected hidden>--Please choose a Status--</option>
-        <option className=" text-gray-700" value="Pending">Pending</option>
-        <option className=" text-gray-700" value="Set">Set</option>
-        <option className=" text-gray-700" value="Completed">Completed</option>
-        <option className=" text-gray-700" value="Missed">Missed</option>
-      </select>
-        
-      
-
     <button
       type="submit"
       className="mb-6 w-full px-7 py-2 bg-green-600 text-white font-medium text-sm uppercase rounded shadow-md
@@ -451,71 +376,6 @@ export default function EditQueue() {
       Delete from Queue
     </button>
     </main>
-
-    <Transition appear show={isPatientOpen} as={Fragment}>
-        <Dialog
-          as="div"
-          className="fixed inset-0 z-10 overflow-y-auto"
-          onClose={closePatientModal}
-        >
-          <div className="min-h-screen px-4 text-center">
-            <Transition.Child
-              as={Fragment}
-              enter="ease-out duration-300"
-              enterFrom="opacity-0"
-              enterTo="opacity-100"
-              leave="ease-in duration-200"
-              leaveFrom="opacity-100"
-              leaveTo="opacity-0"
-            >
-              <Dialog.Overlay className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
-            </Transition.Child>
-
-            <span
-              className="inline-block h-screen align-middle"
-              aria-hidden="true"
-            >
-              &#8203;
-            </span>
-
-            <Transition.Child
-              as={Fragment}
-              enter="ease-out duration-300"
-              enterFrom="opacity-0 scale-95"
-              enterTo="opacity-100 scale-100"
-              leave="ease-in duration-200"
-              leaveFrom="opacity-100 scale-100"
-              leaveTo="opacity-0 scale-95"
-            >
-              <div className="inline-block w-full max-w-3xl p-6 my-8 overflow-hidden text-left align-middle transition-all transform bg-white shadow-xl rounded-2xl">
-                <div className="absolute top-0 right-0 pt-4 pr-4">
-                  <button
-                    type="button"
-                    className="text-gray-400 hover:text-gray-500 focus:outline-none focus:text-gray-500 transition ease-in-out duration-150"
-                    onClick={closePatientModal}
-                  >
-                    <span className="sr-only">Close</span>
-                    <XIcon className="h-6 w-6" aria-hidden="true" />
-                  </button>
-                </div>
-                <Dialog.Title
-                  as="h3"
-                  className="text-lg font-medium leading-6 text-gray-900"
-                >
-                  Choose Patien
-                </Dialog.Title> 
-                <div className="mt-2">
-                  <p className="text-sm text-gray-500">
-                    The following are all patients registered in the system
-                  </p>
-                  {/* Insert your content here */}
-                  {isPatientOpen && <SelectPatientList closePatientModal={closePatientModal} getPatientID={getPatientID} />}
-                </div>
-              </div>
-            </Transition.Child>
-          </div>
-        </Dialog>
-    </Transition>
 
     <Transition appear show={isScheduleOpen} as={Fragment}>
       <Dialog

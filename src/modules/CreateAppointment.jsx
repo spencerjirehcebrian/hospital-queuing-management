@@ -1,5 +1,6 @@
 import {useEffect, useState} from 'react'
 import { toast } from "react-toastify";
+import Spinner from "../components/Spinner";
 
 import { getAuth } from "firebase/auth";
 import { addDoc, collection, serverTimestamp,query,orderBy,limit,getDocs,where, onSnapshot, doc, getDoc, Firestore } from "firebase/firestore";
@@ -15,7 +16,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import { Dialog, Transition } from '@headlessui/react';
 import { Fragment } from 'react';
 import { XIcon } from '@heroicons/react/outline';
-import SelectPatientList from '../functions/SelectPatientList';
+
 import SelectScheduleList from '../functions/SelectScheduleList';
 
 
@@ -25,13 +26,13 @@ export default function CreateAppointment() {
     const navigate = useNavigate()
 
     const [currQueueNum, setCurrQueueNum] = useState(0);
-    const [newQueueNum, setNewQueueNum] = useState(0);
+    //const [newNum, setNewNum] = useState(0);
     //const [searchTerm, setSearchTerm] = useState('');
 
     const [startDate, setStartDate] = useState(new Date());
 
     const [formData, setFormData] = useState({
-        queueNumber: newQueueNum,
+        queueNumber: "",
         patientID: "",
         patientName: "",
         patientEmail: "",
@@ -58,57 +59,104 @@ export default function CreateAppointment() {
         queueStatus
     } = formData;
 
-    const getHighestScore = async () => {
-        const usersRef = collection(db, "queue");
-        const q = query(usersRef, orderBy("queueNumber", "desc"), limit(1));
-        const querySnapshot = await getDocs(q);
-      
-        if (querySnapshot.size === 0) {
-          return 0;
-        } else {
-          const highestScore = querySnapshot.docs[0].data().score;
-
-          return highestScore;
-        }
-    };
-
-    const formatDate = (date) => {
-      const year = date.getFullYear();
-      const month = (date.getMonth() + 1).toString().padStart(2, "0");
-      const day = date.getDate().toString().padStart(2, "0");
-      return `${month}/${day}/${year}`;
-    };
-
     useEffect(() => {
-      setCurrQueueNum(getHighestScore())
-      setNewQueueNum(currQueueNum + 1)
-      //console.log(newQueueNum)
+        const getUsers = async () => {
+          try {
+            setLoading(true);
+            const usersRef = collection(db, "queue");
+            const q = query(usersRef, orderBy("queueNumber", "desc"), limit(1));
+            const q1 = doc(db, "users", auth.currentUser.uid);
+            const [queueSnapshot, userSnapshot] = await Promise.all([
+              getDocs(q),
+              getDoc(q1)
+            ]);
 
-      onDateChange()
+            if (queueSnapshot.size === 0) {
+                const newData = {
+                    ...formData,
+                    queueNumber: 1,
+                    };
+                setFormData(newData);
+            } else {
+                if (userSnapshot.exists()) {
+                    const highestScore = queueSnapshot.docs[0].data().queueNumber;
+                    const newNum1 = highestScore + 1;
 
-      const newData = {
-        ...formData,
-        queueNumber: newQueueNum,
-      }
+                    const newData = {
+                        ...formData ,
+                            queueNumber: newNum1,
+                            patientID: auth.currentUser.uid,
+                            patientName: userSnapshot.data().name,
+                            patientEmail: userSnapshot.data().email
+                        };
+                    setFormData(newData);
+                    }
+            }
+            setLoading(false);
+          } catch (error) {
+            console.error(error);
+            setLoading(false);
+          }
+        };
+        getUsers();
+      }, []);
 
-      setFormData(newData)
-    }, []);
+
+    // useEffect(() => {
+    //     const fetchNewQueueNumber = async () => {
+    //         setLoading(true);
+    //         const usersRef = collection(db, "queue");
+    //         const q = query(usersRef, orderBy("queueNumber", "desc"), limit(1));
+    //         const querySnapshot = await getDocs(q);
+        
+    //         if (querySnapshot.size === 0) {
+    //             const newData = {
+    //                 ...formData,
+    //                 queueNumber: 1,
+    //               };
+    //             setFormData(newData);
+    //         } else {
+    //             const highestScore = querySnapshot.docs[0].data().queueNumber;
+    //             const newNum1 = highestScore + 1;
+    //             const newData = {
+    //                 ...formData,
+    //                 queueNumber: newNum1,
+    //               };
+    //             setFormData(newData);
+
+    //         }
+    //         setLoading(false);
+    //     };
+
+    //     const fetchListing = async () => {
+    //       const docRef = doc(db, "users", auth.currentUser.uid);
+    //       const docSnap = await getDoc(docRef);
+    //       if (docSnap.exists()) {
+
+    //         const newData = {
+    //             ...formData ,
+    //                 patientID: auth.currentUser.uid,
+    //                 patientName: docSnap.data().name,
+    //                 patientEmail: docSnap.data().email
+    //           };
+    //         setFormData(newData);
+            
+    //       } else {
+    //         navigate("/profile");
+    //         toast.error("Critical Error: User does not exist");
+    //       }
+    //     }
+    //     fetchListing();
+    //     fetchNewQueueNumber();
+
+    // }, [navigate, auth.currentUser.uid]);
 
     useEffect(() => {
         if (scheduleID) {
             const q = query(collection(db, 'schedules'), where('__name__', '==', scheduleID));
             getDocs(q).then((querySnapshot) => {
             if (!querySnapshot.empty) {
-              const doc = querySnapshot.docs[0].data();
-              //setResult(`Found document with ID ${scheduleID}. Field1: ${doc.startTime}, Field2: ${doc.endTime}`);
-
-              
-            //   setFormData({
-            //     ...formData,
-            //     scheduleStartTime: doc.startTime,
-            //     scheduleEndTime: doc.endTime,
-            //     doctorName: doc.doctorName
-            // })
+            const doc = querySnapshot.docs[0].data();
 
             const newData = {
               ...formData,
@@ -119,7 +167,7 @@ export default function CreateAppointment() {
             setFormData(newData);
 
             } else {
-              //console.log(`No document found with ID ${scheduleID}`);
+            
               
               const newData = {
                 ...formData,
@@ -173,15 +221,6 @@ export default function CreateAppointment() {
         [e.target.id]: e.target.value,
       }));
     }
-    
-    function onDateChange() {
-      const formattedDate = formatDate(startDate);
-      setFormData(prevFormData => ({
-        ...prevFormData,
-        queueDate: formattedDate
-      }));
-      console.log(formattedDate)
-    }
 
     async function onSubmit(e) {
         e.preventDefault();
@@ -189,16 +228,22 @@ export default function CreateAppointment() {
         setLoading(true);
         try {
           
-          console.log(formData)
-          await addDoc(collection(db, "queue"), formData);
-          setLoading(false);
-          toast.success("Appointment Created");
-          navigate("/queue")
-          }
+        const newData = {
+            ...formData,
+            queueStatus: "Pending"
+            };
+            setFormData(newData);
+
+        console.log(newData)
+        await addDoc(collection(db, "queue"), newData);
+        setLoading(false);
+        toast.success("Appointment Request Submitted");
+        navigate("/appointments")
+        }
 
         catch (error) {
           console.log(error)
-          toast.error("Appointment Failed\n" + error);
+          toast.error("Request Submission Failed\n" + error);
         }
     }
 
@@ -212,7 +257,6 @@ export default function CreateAppointment() {
         setIsScheduleOpen(true);
     }
 
-
     function getScheduleID (e){
         setFormData({
           ...formData,
@@ -220,11 +264,14 @@ export default function CreateAppointment() {
       })
     }
 
-
+    if (loading) {
+        return <Spinner />;
+      }
   return (
     <>
     <main className="max-w-md px-2 mx-auto">
-      <h1 className="text-3xl text-center mt-6 font-bold">Request an Appointment</h1>
+    <h1 className="text-3xl text-center mt-10 font-bold">Request an Appointment</h1>
+      <p className='text-1xl text-center mt-3 font-semibold'>Fill the following form to request an appointment with the hospital</p>
       <form onSubmit={onSubmit}>
         
         <p className="text-lg mt-6 font-semibold">Queue Number</p>
@@ -232,7 +279,7 @@ export default function CreateAppointment() {
           type="text"
           id="queueNumber"
           value={queueNumber}
-          onChange={onChange}
+          
           placeholder="Queue Number"
           maxLength="32"
           required
@@ -284,13 +331,13 @@ export default function CreateAppointment() {
         />
 
         <p className="text-lg font-semibold">Appointment Date</p>
-        <DatePicker
-          type="text"
+        <input
+          type="date"
           id="queueDate"
           dateFormat="MM/dd/yyyy"
-          value={startDate}
-          selected={startDate}
-          onChange={onDateChange}
+          value={queueDate}
+          selected={queueDate}
+          onChange={onChange}
           placeholder="Appointment Date"
           required
           className="w-full px-4 py-2 text-lg text-gray-700 bg-white border border-gray-300 

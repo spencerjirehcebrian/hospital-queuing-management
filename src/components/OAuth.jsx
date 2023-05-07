@@ -4,6 +4,7 @@ import { FcGoogle } from "react-icons/fc";
 import { toast } from "react-toastify";
 import { db } from "../firebase/firebase";
 import { useNavigate } from "react-router-dom";
+import { useState } from "react"
 
 import { getAccessToken } from "firebase/auth";
 import axios from "axios";
@@ -11,6 +12,8 @@ import axios from "axios";
 export default function OAuth() {
 
 const navigate = useNavigate();
+
+const [oauthActive, setOauthActive] = useState(false)
 
 async function onGoogleClick() {
     try {
@@ -47,7 +50,8 @@ async function onGoogleClick() {
 }
 
   return (
-    <div>
+    <>
+    {oauthActive && (<div>
         <div className='my-4 before:border-t flex before:flex-1 items-center before:border-gray-300 
         after:border-t after:flex-1 after:border-gray-300'>
         <p className='text-center font-semibold mx-4'>
@@ -61,6 +65,7 @@ async function onGoogleClick() {
         hover:bg-green-800 active:bg-green-900 shadow-md hover:shadow-lg active:shadow-lg transition duration-150 ease-in-out rounded'>
         <FcGoogle className='text-1xl bg-white rounded-full mr-2'/> Continue With Google Account
         </button>
-    </div>
+    </div>)}
+    </>
   )
 }
