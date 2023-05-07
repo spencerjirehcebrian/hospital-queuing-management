@@ -25,6 +25,11 @@ import EditBills from './modules/EditBills';
 
 import Queue from './modules/Queue';
 import CreateQueue from './modules/CreateQueue';
+import EditQueue from './modules/EditQueue';
+import CreateAppointment from './modules/CreateAppointment';
+import Appointments from './modules/Appointments';
+import PatientHistory from './modules/PatientHistory';
+import StatementOfAccount from './modules/StatementOfAccount';
 
 function App() {
   return (
@@ -35,6 +40,11 @@ function App() {
           <Route path="/" element={<Home/>}/>
           <Route path="/sign-in" element={<SignIn/>}/>
           <Route path="/sign-up" element={<SignUp/>}/>
+
+          <Route path="/create-appointment" element={<CreateAppointment/>}/>
+          <Route path="/appointments" element={<Appointments/>}/>
+          <Route path="/patient-history" element={<PatientHistory/>}/>
+          <Route path="/statement-of-account" element={<StatementOfAccount/>}/>
 
           <Route path="/schedules" element={<Schedules/>}/>
           <Route path="/create-schedule" element={<CreateSchedules/>}/>
@@ -50,6 +60,7 @@ function App() {
 
           <Route path="/queue" element={<Queue/>}/>
           <Route path="/create-queue" element={<CreateQueue/>}/>
+          <Route path="/edit-queue/:queueID" element={<EditQueue/>}/>
 
           <Route path='/profile' element={<PrivateRoute />}>
             <Route path="/profile" element={<Profile/>}/>

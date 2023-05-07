@@ -32,10 +32,10 @@ export default function CreatePatient() {
     const [startDOB, setStartDOB] = useState(false);
 
     function onChange(e) {
-    setFormData((prevState) => ({
-        ...prevState,
-        [e.target.id]: e.target.value,
-    }))
+      setFormData((prevState) => ({
+          ...prevState,
+          [e.target.id]: e.target.value,
+      }))
     }
 
     const navigate = useNavigate()

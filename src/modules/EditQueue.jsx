@@ -1,10 +1,11 @@
 import {useEffect, useState} from 'react'
 import { toast } from "react-toastify";
+import Spinner from "../components/Spinner";
 
 import { getAuth } from "firebase/auth";
-import { addDoc, collection, serverTimestamp,query,orderBy,limit,getDocs,where, onSnapshot, doc, getDoc, Firestore } from "firebase/firestore";
+import { addDoc, collection, serverTimestamp,query,orderBy,limit,getDocs,where, onSnapshot, doc, getDoc, Firestore, updateDoc,deleteDoc } from "firebase/firestore";
 import { app, db } from "../firebase/firebase";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import TimePicker from 'react-time-picker';
 import 'react-time-picker/dist/TimePicker.css';
 import 'react-clock/dist/Clock.css';
@@ -19,14 +20,13 @@ import SelectPatientList from '../functions/SelectPatientList';
 import SelectScheduleList from '../functions/SelectScheduleList';
 
 
-export default function CreateQueue() {
+export default function EditQueue() {
     const [loading, setLoading] = useState(false);
     const auth = getAuth()
     const navigate = useNavigate()
 
     const [currQueueNum, setCurrQueueNum] = useState(0);
     const [newQueueNum, setNewQueueNum] = useState(0);
-    //const [searchTerm, setSearchTerm] = useState('');
 
     const [startDate, setStartDate] = useState(new Date());
 
@@ -58,20 +58,6 @@ export default function CreateQueue() {
         queueStatus
     } = formData;
 
-    const getHighestScore = async () => {
-        const usersRef = collection(db, "queue");
-        const q = query(usersRef, orderBy("queueNumber", "desc"), limit(1));
-        const querySnapshot = await getDocs(q);
-      
-        if (querySnapshot.size === 0) {
-          return 0;
-        } else {
-          const highestScore = querySnapshot.docs[0].data().score;
-
-          return highestScore;
-        }
-    };
-
     const formatDate = (date) => {
       const year = date.getFullYear();
       const month = (date.getMonth() + 1).toString().padStart(2, "0");
@@ -79,20 +65,24 @@ export default function CreateQueue() {
       return `${month}/${day}/${year}`;
     };
 
+    const params =  useParams();
+
     useEffect(() => {
-      setCurrQueueNum(getHighestScore())
-      setNewQueueNum(currQueueNum + 1)
-      //console.log(newQueueNum)
+        setLoading(true);
 
-      onDateChange()
-
-      const newData = {
-        ...formData,
-        queueNumber: newQueueNum,
-      }
-
-      setFormData(newData)
-    }, []);
+        async function fetchListing() {
+          const docRef = doc(db, "queue", params.queueID);
+          const docSnap = await getDoc(docRef);
+          if (docSnap.exists()) {
+            setFormData({...docSnap.data()});
+            setLoading(false);
+          } else {
+            navigate("/queue");
+            toast.error("Queue does not exist");
+          }
+        }
+        fetchListing();
+      }, [navigate, params.queueID]);
 
     useEffect(() => {
         if (scheduleID) {
@@ -189,17 +179,35 @@ export default function CreateQueue() {
         setLoading(true);
         try {
           
-          console.log(formData)
-          await addDoc(collection(db, "queue"), formData);
+          const docRef = doc(db, "queue", params.queueID);
+            await updateDoc(docRef, {
+            ...formData,
+            });
           setLoading(false);
-          toast.success("Appointment Created");
+          toast.success("Changes Saved");
           navigate("/queue")
           }
 
         catch (error) {
           console.log(error)
-          toast.error("Appointment Failed\n" + error);
+          toast.error("Changes Failed\n" + error);
+          setLoading(false);
         }
+    }
+
+    async function onClickDelete() {
+        setLoading(true);
+        try {
+            const documentRef = doc(db, 'queue', params.queueID);
+            await deleteDoc(documentRef);
+              toast.success("Successfully remove from Queue");
+              navigate("/queue");
+              setLoading(false);
+            }catch (error){
+              toast.error("Error deleting document: ", error);
+              setLoading(false);
+            }
+
     }
 
     const [isPatientOpen, setIsPatientOpen] = useState(false);
@@ -237,10 +245,14 @@ export default function CreateQueue() {
     }
 
 
+
+    if (loading) {
+        return <Spinner />;
+      }
   return (
     <>
     <main className="max-w-md px-2 mx-auto">
-      <h1 className="text-3xl text-center mt-6 font-bold">Create Appointment</h1>
+      <h1 className="text-3xl text-center mt-6 font-bold">Edit Appointment</h1>
       <form onSubmit={onSubmit}>
         
         <p className="text-lg mt-6 font-semibold">Queue Number</p>
@@ -428,9 +440,16 @@ export default function CreateQueue() {
         hover:bg-green-700 hover:shadow-lg focus:bg-green-700 focus:shadow-lg
         active:bg-green-800 active:shadow-lg transition duration-150 ease-in-out"
     >
-      Add Apointment to Queue
+      Save Changes
     </button>
       </form>
+      <button
+      onClick={onClickDelete}
+      className='mb-6 w-full bg-amber-700 text-white px-7 py-2 text-sm font-medium uppercase rounded shadow-md 
+            hover:bg-amber-800 transition duration-150 ease-in-out hover:shadow-lg active:bg-amber-900'
+    >
+      Delete from Queue
+    </button>
     </main>
 
     <Transition appear show={isPatientOpen} as={Fragment}>

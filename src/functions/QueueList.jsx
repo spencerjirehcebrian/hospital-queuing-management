@@ -18,10 +18,10 @@ function QueueList() {
       const q = searchTerm
         ? query(
             collection(db, 'queue'),
-            where('number', '>=', searchTerm),
-            where('number', '<=', searchTerm + '\uf8ff')
+            where('patientName', '>=', searchTerm),
+            where('patientName', '<=', searchTerm + '\uf8ff')
           )
-        : collection(db, 'queue', orderBy('name'));
+        : collection(db, 'queue', orderBy('queueNumber'));
   
       const unsubscribe = onSnapshot(q, (snapshot) => {
         const queuesData = snapshot.docs.map((doc) => ({
@@ -60,10 +60,10 @@ function QueueList() {
           Search
         </label>
         <input
-          type="number"
+          type="text"
           id="search"
           className="w-full px-4 py-2 rounded-lg shadow"
-          placeholder="Search by queue number"
+          placeholder="Search by patient name"
           value={searchTerm}
           onChange={handleSearch}
         />
@@ -73,10 +73,14 @@ function QueueList() {
         {queues.map((queue) => (
           <div key={queue.id} 
           className="bg-white p-4 rounded-lg shadow cursor-pointer"
-          onClick={()=>navigate(`/edit-appointment/${queue.id}`)}>
-            <h2 className="text-xl font-semibold">{queue.name}</h2>
-            <p><span className="font-semibold">Doctor Name: </span> {queue.doctorName}</p>
-            <p><span className="font-semibold">Time Slot</span>: {queue.startTime} - {queue.endTime}</p>
+          onClick={()=>navigate(`/edit-queue/${queue.id}`)}>
+            <h2 className="text-xl font-semibold">{queue.queueNumber}</h2>
+            <p><span className="font-semibold">Patient Name: </span> {queue.patientName}</p>
+            <p><span className="font-semibold">Attending Doctor: </span> {queue.doctorName}</p>
+            <p><span className="font-semibold">From: </span> {queue.scheduleStartTime} to {queue.scheduleEndTime}</p>
+            <p><span className="font-semibold">Scheduled Date: </span> {queue.queueDate}</p>
+            <p><span className="font-semibold">Status: </span> {queue.queueStatus}</p>
+            
           </div>
         ))}
       </div>

@@ -51,10 +51,10 @@ export default function EditPatient() {
       }, [navigate, params.patientID    ]);
 
     function onChange(e) {
-    setFormData((prevState) => ({
-        ...prevState,
-        [e.target.id]: e.target.value,
-    }))
+      setFormData((prevState) => ({
+          ...prevState,
+          [e.target.id]: e.target.value,
+      }))
     }
 
     async function onSubmit(e) {

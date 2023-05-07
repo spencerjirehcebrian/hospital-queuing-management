@@ -19,7 +19,7 @@ import SelectPatientList from '../functions/SelectPatientList';
 import SelectScheduleList from '../functions/SelectScheduleList';
 
 
-export default function CreateQueue() {
+export default function CreateAppointment() {
     const [loading, setLoading] = useState(false);
     const auth = getAuth()
     const navigate = useNavigate()
@@ -202,16 +202,6 @@ export default function CreateQueue() {
         }
     }
 
-    const [isPatientOpen, setIsPatientOpen] = useState(false);
-
-    function closePatientModal() {
-        setIsPatientOpen(false);
-    }
-
-    function openPatientModal() {
-        setIsPatientOpen(true);
-    }
-
     const [isScheduleOpen, setIsScheduleOpen] = useState(false);
 
     function closeScheduleModal() {
@@ -222,12 +212,6 @@ export default function CreateQueue() {
         setIsScheduleOpen(true);
     }
 
-    function getPatientID (e){
-        setFormData({
-          ...formData,
-          patientID: e
-      })
-    }
 
     function getScheduleID (e){
         setFormData({
@@ -240,7 +224,7 @@ export default function CreateQueue() {
   return (
     <>
     <main className="max-w-md px-2 mx-auto">
-      <h1 className="text-3xl text-center mt-6 font-bold">Create Appointment</h1>
+      <h1 className="text-3xl text-center mt-6 font-bold">Request an Appointment</h1>
       <form onSubmit={onSubmit}>
         
         <p className="text-lg mt-6 font-semibold">Queue Number</p>
@@ -256,17 +240,6 @@ export default function CreateQueue() {
           className="w-full px-4 py-2 text-lg text-gray-700 bg-white border border-gray-300 
           rounded transition duration-150 ease-in-out focus:text-gray-700 focus:bg-white focus:border-slate-600 mb-6"
         />
-
-    <button
-     type="button"
-     onClick={openPatientModal}
-      className="mb-6 w-full px-7 py-2 bg-amber-700 text-white font-medium text-sm uppercase rounded shadow-md
-        hover:bg-amber-800 hover:shadow-lg focus:bg-amber-800 focus:shadow-lg
-        active:bg-amber-950 active:shadow-lg transition duration-150 ease-in-out"
-        >
-
-      Select Patient
-    </button>
 
         <p className="text-lg font-semibold">Patient ID</p>
         <input
@@ -405,7 +378,7 @@ export default function CreateQueue() {
         />
 
 
-        <p className="text-lg font-semibold">Queue Status</p>
+        {/* <p className="text-lg font-semibold">Queue Status</p>
         <select
         id="queueStatus"
         value={queueStatus}
@@ -418,7 +391,7 @@ export default function CreateQueue() {
         <option className=" text-gray-700" value="Set">Set</option>
         <option className=" text-gray-700" value="Completed">Completed</option>
         <option className=" text-gray-700" value="Missed">Missed</option>
-      </select>
+      </select> */}
         
       
 
@@ -428,75 +401,10 @@ export default function CreateQueue() {
         hover:bg-green-700 hover:shadow-lg focus:bg-green-700 focus:shadow-lg
         active:bg-green-800 active:shadow-lg transition duration-150 ease-in-out"
     >
-      Add Apointment to Queue
+      Submit Appointment Request
     </button>
       </form>
     </main>
-
-    <Transition appear show={isPatientOpen} as={Fragment}>
-        <Dialog
-          as="div"
-          className="fixed inset-0 z-10 overflow-y-auto"
-          onClose={closePatientModal}
-        >
-          <div className="min-h-screen px-4 text-center">
-            <Transition.Child
-              as={Fragment}
-              enter="ease-out duration-300"
-              enterFrom="opacity-0"
-              enterTo="opacity-100"
-              leave="ease-in duration-200"
-              leaveFrom="opacity-100"
-              leaveTo="opacity-0"
-            >
-              <Dialog.Overlay className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
-            </Transition.Child>
-
-            <span
-              className="inline-block h-screen align-middle"
-              aria-hidden="true"
-            >
-              &#8203;
-            </span>
-
-            <Transition.Child
-              as={Fragment}
-              enter="ease-out duration-300"
-              enterFrom="opacity-0 scale-95"
-              enterTo="opacity-100 scale-100"
-              leave="ease-in duration-200"
-              leaveFrom="opacity-100 scale-100"
-              leaveTo="opacity-0 scale-95"
-            >
-              <div className="inline-block w-full max-w-3xl p-6 my-8 overflow-hidden text-left align-middle transition-all transform bg-white shadow-xl rounded-2xl">
-                <div className="absolute top-0 right-0 pt-4 pr-4">
-                  <button
-                    type="button"
-                    className="text-gray-400 hover:text-gray-500 focus:outline-none focus:text-gray-500 transition ease-in-out duration-150"
-                    onClick={closePatientModal}
-                  >
-                    <span className="sr-only">Close</span>
-                    <XIcon className="h-6 w-6" aria-hidden="true" />
-                  </button>
-                </div>
-                <Dialog.Title
-                  as="h3"
-                  className="text-lg font-medium leading-6 text-gray-900"
-                >
-                  Choose Patien
-                </Dialog.Title> 
-                <div className="mt-2">
-                  <p className="text-sm text-gray-500">
-                    The following are all patients registered in the system
-                  </p>
-                  {/* Insert your content here */}
-                  {isPatientOpen && <SelectPatientList closePatientModal={closePatientModal} getPatientID={getPatientID} />}
-                </div>
-              </div>
-            </Transition.Child>
-          </div>
-        </Dialog>
-    </Transition>
 
     <Transition appear show={isScheduleOpen} as={Fragment}>
       <Dialog

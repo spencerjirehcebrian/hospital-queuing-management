@@ -59,14 +59,27 @@ export default function Header() {
                     {loggedIn && (isAdmin && (<li className={`py-3 text-sm text-center font-semibold text-gray-400 border-b-[5px] cursor-pointer border-transparent transition duration-300
                         ${pathMatchRoute("/billing") && "text-gray-900 border-b-green-500"}`}
                         onClick={()=> navigate("/billing")}>Billing</li>))}
+
+
                     
+                    {loggedIn && (!isAdmin && (<li className={`py-3 text-sm text-center font-semibold text-gray-400 border-b-[5px] cursor-pointer border-transparent transition duration-300
+                        ${pathMatchRoute("/create-appointment") && "text-gray-900 border-b-green-500"}`}
+                        onClick={()=> navigate("/create-appointment")}>Schedule an Appointment</li>))}
+
                     {loggedIn && (!isAdmin && (<li className={`py-3 text-sm text-center font-semibold text-gray-400 border-b-[5px] cursor-pointer border-transparent transition duration-300
                         ${pathMatchRoute("/appointments") && "text-gray-900 border-b-green-500"}`}
                         onClick={()=> navigate("/appointments")}>Your Appointments</li>))}
 
                     {loggedIn && (!isAdmin && (<li className={`py-3 text-sm text-center font-semibold text-gray-400 border-b-[5px] cursor-pointer border-transparent transition duration-300
+                        ${pathMatchRoute("/patient-history") && "text-gray-900 border-b-green-500"}`}
+                        onClick={()=> navigate("/patient-history")}>History</li>))}
+
+                    {loggedIn && (!isAdmin && (<li className={`py-3 text-sm text-center font-semibold text-gray-400 border-b-[5px] cursor-pointer border-transparent transition duration-300
                         ${pathMatchRoute("/statement-of-account") && "text-gray-900 border-b-green-500"}`}
                         onClick={()=> navigate("/statement-of-account")}>Statement of Account</li>))}
+
+
+
                     
                     <li className={`py-3 text-sm font-semibold text-center text-gray-400 border-b-[5px] cursor-pointer border-transparent transition duration-300
                     ${(pathMatchRoute("/sign-in") || pathMatchRoute("/profile")) && "text-gray-900 border-b-green-500"}`}
