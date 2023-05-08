@@ -35,9 +35,15 @@ import EditAppointment from './modules/EditAppointment';
 import ShowHistory from './modules/ShowHistory';
 import ShowStatementOfAccount from './modules/ShowStatementOfAccount';
 
+import { Helmet } from 'react-helmet';
+
 function App() {
   return (
     <>
+    <Helmet>
+        <title>Hospital Queueing Management System</title>
+      </Helmet>
+
       <Router>
         <Header/>
         <Routes>
