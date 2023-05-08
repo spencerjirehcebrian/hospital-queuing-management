@@ -327,16 +327,7 @@ export default function EditAppointment() {
           focus:outline-none focus:shadow-outline-purple focus:border-purple-500"
         />
 
-<button
-         type="button"
-         onClick={openScheduleModal}
-            className="mb-6 w-full px-7 py-2 bg-amber-700 text-white font-medium text-sm uppercase rounded shadow-md
-                hover:bg-amber-800 hover:shadow-lg focus:bg-amber-800 focus:shadow-lg
-                active:bg-amber-950 active:shadow-lg transition duration-150 ease-in-out"
-            >
-            Select Schedule & Doctor
-        </button>
-      
+
 
         <p className="text-lg font-semibold">Schedule End Time</p>
         <TimePicker
@@ -351,6 +342,17 @@ export default function EditAppointment() {
           className="w-full mb-6 h-10 px-3 text-base placeholder-gray-600 border rounded-lg 
           focus:outline-none focus:shadow-outline-purple focus:border-purple-500"
         />
+
+<button
+         type="button"
+         onClick={openScheduleModal}
+            className="mb-6 w-full px-7 py-2 bg-amber-700 text-white font-medium text-sm uppercase rounded shadow-md
+                hover:bg-amber-800 hover:shadow-lg focus:bg-amber-800 focus:shadow-lg
+                active:bg-amber-950 active:shadow-lg transition duration-150 ease-in-out"
+            >
+            Select Schedule & Doctor
+        </button>
+      
         </div>
 
         <p className="text-lg font-semibold">Appointment Description</p>
