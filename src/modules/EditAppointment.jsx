@@ -336,7 +336,7 @@ export default function EditAppointment() {
             >
             Select Schedule & Doctor
         </button>
-      </div>
+      
 
         <p className="text-lg font-semibold">Schedule End Time</p>
         <TimePicker
@@ -351,6 +351,7 @@ export default function EditAppointment() {
           className="w-full mb-6 h-10 px-3 text-base placeholder-gray-600 border rounded-lg 
           focus:outline-none focus:shadow-outline-purple focus:border-purple-500"
         />
+        </div>
 
         <p className="text-lg font-semibold">Appointment Description</p>
         <textarea
