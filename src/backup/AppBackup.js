@@ -41,27 +41,20 @@ function App() {
       <Router>
         <Header/>
         <Routes>
-
-          {/* Any User */}
           <Route path="/" element={<Home/>}/>
           <Route path="/sign-in" element={<SignIn/>}/>
           <Route path="/sign-up" element={<SignUp/>}/>
 
-          {/* Login */}
-          <Route path='/profile' element={<PrivateRoute />}><Route path="/profile" element={<Profile/>}/></Route>
+          <Route path="/create-appointment" element={<CreateAppointment/>}/>
+          <Route path="/appointments" element={<Appointments/>}/>
+          <Route path="/edit-appointment/:appointmentID" element={<EditAppointment/>}/>
 
-          {/* Patient */}
-          <Route path="/appointments" element={<PrivateRoute />}><Route path="/appointments" element={<Appointments/>}/></Route>
-          <Route path="/create-appointment" element={<PrivateRoute />}><Route path="/create-appointment" element={<CreateAppointment/>}/></Route>
-          <Route path="/edit-appointment/:appointmentID" element={<PrivateRoute />}><Route path="/edit-appointment/:appointmentID" element={<EditAppointment/>}/></Route>
+          <Route path="/patient-history" element={<PatientHistory/>}/>
+          <Route path="/show-history/:appointmentID" element={<ShowHistory/>}/>
 
-          <Route path="/patient-history" element={<PrivateRoute />}><Route path="/patient-history" element={<PatientHistory/>}/></Route>
-          <Route path="/show-history/:appointmentID" element={<PrivateRoute />}><Route path="/show-history/:appointmentID" element={<ShowHistory/>}/></Route>
+          <Route path="/statement-of-account" element={<StatementOfAccount/>}/>
+          <Route path="/show-statement-of-account/:billID" element={<ShowStatementOfAccount/>}/>
 
-          <Route path="/statement-of-account" element={<PrivateRoute />}><Route path="/statement-of-account" element={<StatementOfAccount/>}/></Route>
-          <Route path="/show-statement-of-account/:billID" element={<PrivateRoute />}><Route path="/show-statement-of-account/:billID" element={<ShowStatementOfAccount/>}/></Route>
-
-          {/* Admin */}
           <Route path="/schedules" element={<AdminRoute />}><Route path="/schedules" element={<Schedules/>}/></Route>
           <Route path="/create-schedule" element={<AdminRoute />}><Route path="/create-schedule" element={<CreateSchedules/>}/></Route>
           <Route path="/edit-schedule/:scheduleID" element={<AdminRoute />}><Route path="/edit-schedule/:scheduleID" element={<EditSchedules/>}/></Route>
@@ -74,10 +67,15 @@ function App() {
           <Route path="/create-bills" element={<AdminRoute />}><Route path="/create-bills" element={<CreateBills/>}/></Route>
           <Route path="/edit-bills/:billID" element={<AdminRoute />}><Route path="/edit-bills/:billID" element={<EditBills/>}/></Route>
 
-          <Route path="/queue" element={<AdminRoute />}><Route path="/queue" element={<Queue/>}/></Route>
-          <Route path="/create-queue" element={<AdminRoute />}><Route path="/create-queue" element={<CreateQueue/>}/></Route>
-          <Route path="/edit-queue/:queueID" element={<AdminRoute />}><Route path="/edit-queue/:queueID" element={<EditQueue/>}/></Route>
-    
+            <Route path="/queue" element={<Queue/>}/>
+            <Route path="/create-queue" element={<CreateQueue/>}/>
+            <Route path="/edit-queue/:queueID" element={<EditQueue/>}/>
+          
+
+          <Route path='/profile' element={<PrivateRoute />}>
+            <Route path="/profile" element={<Profile/>}/>
+          </Route>
+          
         </Routes>
       </Router>
       <ToastContainer

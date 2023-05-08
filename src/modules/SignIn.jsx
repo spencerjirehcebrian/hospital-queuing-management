@@ -75,6 +75,7 @@ if (loading) {
         id="email"
         value={email} 
         onChange={onChange}
+        required
         placeholder='Email Address'/>
      
 
@@ -83,7 +84,8 @@ if (loading) {
           <input className="w-full px-4 py-2 text-lg text-gray-700 bg-white border-gray-300 rounded transition ease-in-out" 
           type={showPassword ? "text" : "password"}  
           id="password"
-          value={password}  
+          value={password}
+          required  
           onChange={onChange}
           placeholder='Password'/>
         </form>

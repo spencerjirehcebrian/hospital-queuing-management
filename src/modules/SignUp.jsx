@@ -95,7 +95,8 @@ if (loading) {
       <input className="w-full mb-6 px-4 py-2 text-lg text-gray-700 bg-white border-gray-300 rounded transition ease-in-out" 
         type="text" 
         id="name"
-        value={name} 
+        value={name}
+        required 
         onChange={onChange}
         placeholder='Full Name'/>
 
@@ -104,13 +105,15 @@ if (loading) {
         onFocus={()=>setStartDOB(true)}
         onBlur={()=>setStartDOB(false)}
         id="dob"
-        value={dob} 
+        value={dob}
+        required 
         onChange={onChange}
         placeholder='Date of Birth'/>
 
       <select
         id="sex"
         value={sex}
+        required
         onChange={onChange}
         className={`w-full mb-6 px-4 py-2 text-lg text-gray-500 bg-white border-gray-300 rounded transition ease-in-out
          ${sex|| "text-gray-700"}`}
@@ -125,7 +128,8 @@ if (loading) {
         <input className="w-full mb-6 px-4 py-2 text-lg text-gray-700 bg-white border-gray-300 rounded transition ease-in-out" 
         type="email" 
         id="email"
-        value={email} 
+        value={email}
+        required 
         onChange={onChange}
         placeholder='Email Address'/>
      
@@ -135,7 +139,8 @@ if (loading) {
           <input className="w-full px-4 py-2 text-lg text-gray-700 bg-white border-gray-300 rounded transition ease-in-out" 
           type={showPassword ? "text" : "password"}  
           id="password"
-          value={password}  
+          value={password}
+          required  
           onChange={onChange}
           placeholder='Password'/>
         </form>

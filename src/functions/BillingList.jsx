@@ -77,8 +77,8 @@ function BillingList() {
             <h2 className="text-xl font-semibold">{bill.billName}</h2>
             <p><span className="font-semibold">Appointment ID: </span> {bill.appointmentID}</p>
             <p><span className="font-semibold">Patient ID: </span> {bill.patientID}</p>
-            <p><span className="font-semibold">Customer Name: </span> {bill.customerName}</p>
-            <p><span className="font-semibold">Customer Email: </span> {bill.customerEmail}</p>
+            <p><span className="font-semibold">Patient Name: </span> {bill.patientName}</p>
+            <p><span className="font-semibold">Patient Email: </span> {bill.patientEmail}</p>
             <p><span className="font-semibold">Total Due: </span> PHP {bill.totalDue}</p>
             <p><span className="font-semibold">Bill Description: </span> {bill.billDescription}</p>
             <p><span className="font-semibold">Bill Status: </span> {bill.billStatus}</p>
