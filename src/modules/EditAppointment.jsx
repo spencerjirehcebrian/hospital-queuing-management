@@ -214,7 +214,7 @@ export default function EditAppointment() {
           type="text"
           id="queueNumber"
           value={queueNumber}
-          onChange={onChange}
+          
           placeholder="Queue Number"
           maxLength="32"
           required
@@ -223,6 +223,7 @@ export default function EditAppointment() {
           rounded transition duration-150 ease-in-out focus:text-gray-700 focus:bg-white focus:border-slate-600 mb-6"
         />
 
+<div className="border border-gray-400 px-4 py-3 rounded-lg mb-5" >
         <p className="text-lg font-semibold">Patient ID</p>
         <input
           type="text"
@@ -262,9 +263,11 @@ export default function EditAppointment() {
           required
           disabled
           className="w-full px-4 py-2 text-lg text-gray-700 bg-white border border-gray-300 
-          rounded transition duration-150 ease-in-out focus:text-gray-700 focus:bg-white focus:border-slate-600 mb-6"
+          rounded transition duration-150 ease-in-out focus:text-gray-700 focus:bg-white focus:border-slate-600 mb-2"
         />
+        </div>
 
+        <div className="border border-gray-400 px-4 py-3 rounded-lg mb-5" >
         <p className="text-lg font-semibold">Appointment Date</p>
         <input
           type="date"
@@ -279,15 +282,7 @@ export default function EditAppointment() {
           rounded transition duration-150 ease-in-out focus:text-gray-700 focus:bg-white focus:border-slate-600 mb-6"
         />
 
-        <button
-         type="button"
-         onClick={openScheduleModal}
-            className="mb-6 w-full px-7 py-2 bg-amber-700 text-white font-medium text-sm uppercase rounded shadow-md
-                hover:bg-amber-800 hover:shadow-lg focus:bg-amber-800 focus:shadow-lg
-                active:bg-amber-950 active:shadow-lg transition duration-150 ease-in-out"
-            >
-            Select Schedule & Doctor
-        </button>
+
 
         <p className="text-lg font-semibold">Schedule ID</p>
         <input
@@ -332,6 +327,17 @@ export default function EditAppointment() {
           focus:outline-none focus:shadow-outline-purple focus:border-purple-500"
         />
 
+<button
+         type="button"
+         onClick={openScheduleModal}
+            className="mb-6 w-full px-7 py-2 bg-amber-700 text-white font-medium text-sm uppercase rounded shadow-md
+                hover:bg-amber-800 hover:shadow-lg focus:bg-amber-800 focus:shadow-lg
+                active:bg-amber-950 active:shadow-lg transition duration-150 ease-in-out"
+            >
+            Select Schedule & Doctor
+        </button>
+      </div>
+
         <p className="text-lg font-semibold">Schedule End Time</p>
         <TimePicker
           id="scheduleEndTime"
@@ -359,13 +365,31 @@ export default function EditAppointment() {
           rounded transition duration-150 ease-in-out focus:text-gray-700 focus:bg-white focus:border-slate-600 mb-6"
         />
 
+
+        {/* <p className="text-lg font-semibold">Queue Status</p>
+        <select
+        id="queueStatus"
+        value={queueStatus}
+        onChange={onChange}
+        className={`w-full mb-6 px-4 py-2 text-lg text-gray-500 bg-white border-gray-300 rounded transition ease-in-out
+         `}
+      >
+        <option className=" text-gray-400" value="" disabled selected hidden>--Please choose a Status--</option>
+        <option className=" text-gray-700" value="Pending">Pending</option>
+        <option className=" text-gray-700" value="Set">Set</option>
+        <option className=" text-gray-700" value="Completed">Completed</option>
+        <option className=" text-gray-700" value="Missed">Missed</option>
+      </select> */}
+        
+      
+
     <button
       type="submit"
-      className="mb-6 w-full px-7 py-2 bg-green-600 text-white font-medium text-sm uppercase rounded shadow-md
+      className="mb-4 w-full px-7 py-2 bg-green-600 text-white font-medium text-sm uppercase rounded shadow-md
         hover:bg-green-700 hover:shadow-lg focus:bg-green-700 focus:shadow-lg
         active:bg-green-800 active:shadow-lg transition duration-150 ease-in-out"
     >
-      Save Changes
+      Submit Appointment Request
     </button>
       </form>
       <button

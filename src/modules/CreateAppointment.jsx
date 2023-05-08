@@ -288,6 +288,7 @@ export default function CreateAppointment() {
           rounded transition duration-150 ease-in-out focus:text-gray-700 focus:bg-white focus:border-slate-600 mb-6"
         />
 
+<div className="border border-gray-400 px-4 py-3 rounded-lg mb-5" >
         <p className="text-lg font-semibold">Patient ID</p>
         <input
           type="text"
@@ -327,9 +328,11 @@ export default function CreateAppointment() {
           required
           disabled
           className="w-full px-4 py-2 text-lg text-gray-700 bg-white border border-gray-300 
-          rounded transition duration-150 ease-in-out focus:text-gray-700 focus:bg-white focus:border-slate-600 mb-6"
+          rounded transition duration-150 ease-in-out focus:text-gray-700 focus:bg-white focus:border-slate-600 mb-2"
         />
+        </div>
 
+        <div className="border border-gray-400 px-4 py-3 rounded-lg mb-5" >
         <p className="text-lg font-semibold">Appointment Date</p>
         <input
           type="date"
@@ -344,15 +347,7 @@ export default function CreateAppointment() {
           rounded transition duration-150 ease-in-out focus:text-gray-700 focus:bg-white focus:border-slate-600 mb-6"
         />
 
-        <button
-         type="button"
-         onClick={openScheduleModal}
-            className="mb-6 w-full px-7 py-2 bg-amber-700 text-white font-medium text-sm uppercase rounded shadow-md
-                hover:bg-amber-800 hover:shadow-lg focus:bg-amber-800 focus:shadow-lg
-                active:bg-amber-950 active:shadow-lg transition duration-150 ease-in-out"
-            >
-            Select Schedule & Doctor
-        </button>
+
 
         <p className="text-lg font-semibold">Schedule ID</p>
         <input
@@ -396,6 +391,17 @@ export default function CreateAppointment() {
           className="w-full mb-6 h-10 px-3 text-base placeholder-gray-600 border rounded-lg 
           focus:outline-none focus:shadow-outline-purple focus:border-purple-500"
         />
+
+<button
+         type="button"
+         onClick={openScheduleModal}
+            className="mb-6 w-full px-7 py-2 bg-amber-700 text-white font-medium text-sm uppercase rounded shadow-md
+                hover:bg-amber-800 hover:shadow-lg focus:bg-amber-800 focus:shadow-lg
+                active:bg-amber-950 active:shadow-lg transition duration-150 ease-in-out"
+            >
+            Select Schedule & Doctor
+        </button>
+      </div>
 
         <p className="text-lg font-semibold">Schedule End Time</p>
         <TimePicker

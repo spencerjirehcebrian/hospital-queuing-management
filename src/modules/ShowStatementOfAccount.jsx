@@ -44,8 +44,8 @@ export default function ShowStatementOfAccount() {
         billName: "",
         appointmentID: "",
         patientID: "",
-        customerName: "",
-        customerEmail: "",
+        patientName: "",
+        patientEmail: "",
         totalDue: 0,
         billDescription: "",
         billStatus: ""
@@ -55,8 +55,8 @@ export default function ShowStatementOfAccount() {
         billName,
         appointmentID,
         patientID,
-        customerName,
-        customerEmail,
+        patientName,
+        patientEmail,
         totalDue,
         billDescription,
         billStatus
@@ -125,6 +125,7 @@ export default function ShowStatementOfAccount() {
           rounded transition duration-150 ease-in-out focus:text-gray-700 focus:bg-white focus:border-slate-600 mb-6"
         />
 
+<div className="border border-gray-400 px-4 py-3 rounded-lg mb-5" >
         <p className="text-lg font-semibold">Patient ID</p>
         <input
           type="text"
@@ -139,13 +140,13 @@ export default function ShowStatementOfAccount() {
           rounded transition duration-150 ease-in-out focus:text-gray-700 focus:bg-white focus:border-slate-600 mb-6"
         />
 
-        <p className="text-lg font-semibold">Customer Name</p>
+        <p className="text-lg font-semibold">Patient Name</p>
         <input
           type="text"
-          id="customerName"
-          value={customerName}
+          id="patientName"
+          value={patientName}
           onChange={onChange}
-          placeholder="Customer Name"
+          placeholder="Patient Name"
           maxLength="32"
           required
           disabled
@@ -153,19 +154,20 @@ export default function ShowStatementOfAccount() {
           rounded transition duration-150 ease-in-out focus:text-gray-700 focus:bg-white focus:border-slate-600 mb-6"
         />
 
-        <p className="text-lg font-semibold">Customer Email</p>
+        <p className="text-lg font-semibold">Patient Email</p>
         <input
           type="text"
-          id="customerEmail"
-          value={customerEmail}
+          id="patientEmail"
+          value={patientEmail}
           onChange={onChange}
-          placeholder="Customer Email"
+          placeholder="Patient Email"
           maxLength="32"
           required
           disabled
           className="w-full px-4 py-2 text-lg text-gray-700 bg-white border border-gray-300 
           rounded transition duration-150 ease-in-out focus:text-gray-700 focus:bg-white focus:border-slate-600 mb-6"
         />
+        </div>
 
         <p className="text-lg font-semibold">Total Due</p>
         <input

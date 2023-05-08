@@ -198,6 +198,7 @@ export default function ShowHistory() {
     <>
     <main className="max-w-md px-2 mx-auto">
       <h1 className="text-3xl text-center mt-10 font-bold">Appointment Details</h1>
+      <p className='text-1xl text-center mt-3 font-semibold'>View the details of the appointment</p>
       <form onSubmit={onSubmit}>
         
         <p className="text-lg mt-6 font-semibold">Queue Number</p>
@@ -214,6 +215,7 @@ export default function ShowHistory() {
           rounded transition duration-150 ease-in-out focus:text-gray-700 focus:bg-white focus:border-slate-600 mb-6"
         />
 
+<div className="border border-gray-400 px-4 py-3 rounded-lg mb-5" >
         <p className="text-lg font-semibold">Patient ID</p>
         <input
           type="text"
@@ -255,7 +257,8 @@ export default function ShowHistory() {
           className="w-full px-4 py-2 text-lg text-gray-700 bg-white border border-gray-300 
           rounded transition duration-150 ease-in-out focus:text-gray-700 focus:bg-white focus:border-slate-600 mb-6"
         />
-
+</div>
+<div className="border border-gray-400 px-4 py-3 rounded-lg mb-5" >
         <p className="text-lg font-semibold">Appointment Date</p>
         <input
           type="date"
@@ -328,6 +331,7 @@ export default function ShowHistory() {
           className="w-full mb-6 h-10 px-3 text-base placeholder-gray-600 border rounded-lg 
           focus:outline-none focus:shadow-outline-purple focus:border-purple-500"
         />
+        </div>
 
         <p className="text-lg font-semibold">Appointment Description</p>
         <textarea
@@ -342,6 +346,22 @@ export default function ShowHistory() {
           className="w-full px-4 py-2 text-lg text-gray-700 bg-white border border-gray-300 
           rounded transition duration-150 ease-in-out focus:text-gray-700 focus:bg-white focus:border-slate-600 mb-6"
         />
+
+        <p className="text-lg font-semibold">Queue Status</p>
+        <select
+        id="queueStatus"
+        value={queueStatus}
+        onChange={onChange}
+        disabled
+        className={`w-full mb-16 px-4 py-2 text-lg text-gray-500 bg-white border-gray-300 rounded transition ease-in-out
+         `}
+      >
+        <option className=" text-gray-400" value="" disabled selected hidden>--Please choose a Status--</option>
+        <option className=" text-gray-700" value="Pending">Pending</option>
+        <option className=" text-gray-700" value="Set">Set</option>
+        <option className=" text-gray-700" value="Completed">Completed</option>
+        <option className=" text-gray-700" value="Missed">Missed</option>
+      </select>
       </form>
     </main>
     </>

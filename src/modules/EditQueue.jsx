@@ -255,6 +255,7 @@ export default function EditQueue() {
       <h1 className="text-3xl text-center mt-6 font-bold">Edit Appointment</h1>
       <form onSubmit={onSubmit}>
         
+
         <p className="text-lg mt-6 font-semibold">Queue Number</p>
         <input
           type="text"
@@ -269,16 +270,8 @@ export default function EditQueue() {
           rounded transition duration-150 ease-in-out focus:text-gray-700 focus:bg-white focus:border-slate-600 mb-6"
         />
 
-    <button
-     type="button"
-     onClick={openPatientModal}
-      className="mb-6 w-full px-7 py-2 bg-amber-700 text-white font-medium text-sm uppercase rounded shadow-md
-        hover:bg-amber-800 hover:shadow-lg focus:bg-amber-800 focus:shadow-lg
-        active:bg-amber-950 active:shadow-lg transition duration-150 ease-in-out"
-        >
+<div className="border border-gray-400 px-4 py-3 rounded-lg mb-5" >
 
-      Select Patient
-    </button>
 
         <p className="text-lg font-semibold">Patient ID</p>
         <input
@@ -322,13 +315,25 @@ export default function EditQueue() {
           rounded transition duration-150 ease-in-out focus:text-gray-700 focus:bg-white focus:border-slate-600 mb-6"
         />
 
+<button
+     type="button"
+     onClick={openPatientModal}
+      className="mb-6 w-full px-7 py-2 bg-amber-700 text-white font-medium text-sm uppercase rounded shadow-md
+        hover:bg-amber-800 hover:shadow-lg focus:bg-amber-800 focus:shadow-lg
+        active:bg-amber-950 active:shadow-lg transition duration-150 ease-in-out"
+        >
+
+      Select Patient
+    </button>
+
+</div>
+<div className="border border-gray-400 px-4 py-3 rounded-lg mb-5" >
         <p className="text-lg font-semibold">Appointment Date</p>
         <input
-          type="text"
+          type="date"
           id="queueDate"
           dateFormat="MM/dd/yyyy"
           value={queueDate}
-          selected={queueDate}
           onChange={onChange}
           placeholder="Appointment Date"
           required
@@ -336,15 +341,7 @@ export default function EditQueue() {
           rounded transition duration-150 ease-in-out focus:text-gray-700 focus:bg-white focus:border-slate-600 mb-6"
         />
 
-        <button
-         type="button"
-         onClick={openScheduleModal}
-            className="mb-6 w-full px-7 py-2 bg-amber-700 text-white font-medium text-sm uppercase rounded shadow-md
-                hover:bg-amber-800 hover:shadow-lg focus:bg-amber-800 focus:shadow-lg
-                active:bg-amber-950 active:shadow-lg transition duration-150 ease-in-out"
-            >
-            Select Schedule & Doctor
-        </button>
+        
 
         <p className="text-lg font-semibold">Schedule ID</p>
         <input
@@ -403,6 +400,18 @@ export default function EditQueue() {
           focus:outline-none focus:shadow-outline-purple focus:border-purple-500"
         />
 
+<button
+         type="button"
+         onClick={openScheduleModal}
+            className="mb-6 w-full px-7 py-2 bg-amber-700 text-white font-medium text-sm uppercase rounded shadow-md
+                hover:bg-amber-800 hover:shadow-lg focus:bg-amber-800 focus:shadow-lg
+                active:bg-amber-950 active:shadow-lg transition duration-150 ease-in-out"
+            >
+            Select Schedule & Doctor
+        </button>
+        
+        </div>
+
         <p className="text-lg font-semibold">Appointment Description</p>
         <textarea
           type="text"
@@ -440,7 +449,7 @@ export default function EditQueue() {
         hover:bg-green-700 hover:shadow-lg focus:bg-green-700 focus:shadow-lg
         active:bg-green-800 active:shadow-lg transition duration-150 ease-in-out"
     >
-      Save Changes
+      Add Apointment to Queue
     </button>
       </form>
       <button
