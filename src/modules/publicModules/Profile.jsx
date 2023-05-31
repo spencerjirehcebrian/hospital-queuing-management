@@ -1,5 +1,5 @@
 import { getAuth, updateProfile } from "firebase/auth";
-import Spinner from "../components/Spinner";
+import Spinner from "../../components/Spinner";
 import {
   collection,
   deleteDoc,
@@ -14,7 +14,7 @@ import {
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { db } from "../firebase/firebase";
+import { db } from "../../firebase/firebase";
 import { FcHome } from "react-icons/fc";
 import { useEffect } from "react";
 

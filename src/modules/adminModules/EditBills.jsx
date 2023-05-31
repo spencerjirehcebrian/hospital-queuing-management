@@ -2,9 +2,9 @@ import {useEffect, useState} from 'react'
 import { toast } from "react-toastify";
 
 import { getAuth } from "firebase/auth";
-import { addDoc, collection, serverTimestamp, query, where, getDocs } from "firebase/firestore";
-import { db } from "../firebase/firebase";
-import { useNavigate } from "react-router-dom";
+import { addDoc, collection, serverTimestamp, query, where, getDocs, doc, getDoc, deleteDoc } from "firebase/firestore";
+import { db } from "../../firebase/firebase";
+import { useNavigate, useParams } from "react-router-dom";
 import TimePicker from 'react-time-picker';
 import 'react-time-picker/dist/TimePicker.css';
 import 'react-clock/dist/Clock.css';
@@ -13,8 +13,8 @@ import { Dialog, Transition } from '@headlessui/react';
 import { Fragment } from 'react';
 import { XIcon } from '@heroicons/react/outline';
 
-import SelectPatientList from '../functions/SelectPatientList';
-import SelectQueueList from '../functions/SelectQueueList';
+import SelectPatientList from '../../functions/SelectPatientList';
+import SelectQueueList from '../../functions/SelectQueueList';
 
 export default function CreateBills() {
     const [loading, setLoading] = useState(false);
@@ -49,6 +49,35 @@ export default function CreateBills() {
         [e.target.id]: e.target.value,
       }));
       }
+
+      const params =  useParams();
+
+      useEffect(() => {
+          setLoading(true);
+          async function fetchListing() {
+            const docRef = doc(db, "bills", params.billID);
+            const docSnap = await getDoc(docRef);
+            if (docSnap.exists()) {
+              setFormData({...docSnap.data()});
+              setLoading(false);
+            } else {
+              navigate("/billing");
+              toast.error("Bill does not exist");
+            }
+          }
+          fetchListing();
+      }, [navigate, params.billID]);
+  
+      async function onDeleteClick() {
+          try {
+          const documentRef = doc(db, 'bills', params.billID);
+          await deleteDoc(documentRef);
+            toast.success("Bill successfully deleted!");
+            navigate("/billing");
+          }catch (error){
+            toast.error("Error deleting bills: ", error);
+          }
+        }
 
     async function onSubmit(e) {
         e.preventDefault();
@@ -168,7 +197,7 @@ export default function CreateBills() {
   return (
     <>
       <main className="max-w-md px-2 mx-auto">
-        <h1 className="text-3xl text-center mt-6 font-bold">Charge a Customer</h1>
+        <h1 className="text-3xl text-center mt-6 font-bold">Update Bill Details</h1>
         <form onSubmit={onSubmit}>
           
           <p className="text-lg mt-6 font-semibold">Bill Name</p>
@@ -313,6 +342,15 @@ export default function CreateBills() {
         Charge Customer
       </button>
         </form>
+
+        <button
+        onClick={onDeleteClick}
+        className="mb-6 w-full px-7 py-2 bg-amber-700 text-white font-medium text-sm uppercase rounded shadow-md
+          hover:bg-amber-800 hover:shadow-lg focus:bg-amber-800 focus:shadow-lg
+          active:bg-amber-900 active:shadow-lg transition duration-150 ease-in-out"
+      >
+        Delete Bill from Records
+      </button>
       </main>
 
       <Transition appear show={isPatientOpen} as={Fragment}>

@@ -1,10 +1,10 @@
 import {useEffect, useState} from 'react'
 import { toast } from "react-toastify";
-import Spinner from "../components/Spinner";
+import Spinner from "../../components/Spinner";
 
 import { getAuth } from "firebase/auth";
 import { addDoc, collection, serverTimestamp,query,orderBy,limit,getDocs,where, onSnapshot, doc, getDoc, Firestore, updateDoc,deleteDoc } from "firebase/firestore";
-import { app, db } from "../firebase/firebase";
+import { app, db } from "../../firebase/firebase";
 import { useNavigate, useParams } from "react-router-dom";
 import TimePicker from 'react-time-picker';
 import 'react-time-picker/dist/TimePicker.css';

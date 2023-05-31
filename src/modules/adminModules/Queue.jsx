@@ -1,8 +1,8 @@
 import React from 'react'
 import { useNavigate } from "react-router-dom";
-import QueueList from '../functions/QueueList';
+import QueueList from '../../functions/QueueList';
 
-export default function Schedules() {
+export default function Queue() {
 
     const navigate = useNavigate()
 

@@ -1,10 +1,10 @@
 import {useEffect, useState} from 'react'
 import { toast } from "react-toastify";
-import Spinner from "../components/Spinner";
+import Spinner from "../../components/Spinner";
 
 import { getAuth } from "firebase/auth";
 import { addDoc, collection, serverTimestamp,query,orderBy,limit,getDocs,where, onSnapshot, doc, getDoc, Firestore, updateDoc,deleteDoc } from "firebase/firestore";
-import { app, db } from "../firebase/firebase";
+import { app, db } from "../../firebase/firebase";
 import { useNavigate, useParams } from "react-router-dom";
 import TimePicker from 'react-time-picker';
 import 'react-time-picker/dist/TimePicker.css';
@@ -16,17 +16,22 @@ import "react-datepicker/dist/react-datepicker.css";
 import { Dialog, Transition } from '@headlessui/react';
 import { Fragment } from 'react';
 import { XIcon } from '@heroicons/react/outline';
-import SelectPatientList from '../functions/SelectPatientList';
-import SelectScheduleList from '../functions/SelectScheduleList';
+import SelectPatientList from '../../functions/SelectPatientList';
+import SelectScheduleList from '../../functions/SelectScheduleList';
 
 
-export default function EditAppointment() {
+export default function EditQueue() {
     const [loading, setLoading] = useState(false);
     const auth = getAuth()
     const navigate = useNavigate()
 
+    const [currQueueNum, setCurrQueueNum] = useState(0);
+    const [newQueueNum, setNewQueueNum] = useState(0);
+
+    const [startDate, setStartDate] = useState(new Date());
+
     const [formData, setFormData] = useState({
-        queueNumber: "",
+        queueNumber: newQueueNum,
         patientID: "",
         patientName: "",
         patientEmail: "",
@@ -53,25 +58,31 @@ export default function EditAppointment() {
         queueStatus
     } = formData;
 
+    const formatDate = (date) => {
+      const year = date.getFullYear();
+      const month = (date.getMonth() + 1).toString().padStart(2, "0");
+      const day = date.getDate().toString().padStart(2, "0");
+      return `${month}/${day}/${year}`;
+    };
+
     const params =  useParams();
 
     useEffect(() => {
         setLoading(true);
 
         async function fetchListing() {
-          const docRef = doc(db, "queue", params.appointmentID);
+          const docRef = doc(db, "queue", params.queueID);
           const docSnap = await getDoc(docRef);
           if (docSnap.exists()) {
               setFormData({...docSnap.data()});
             setLoading(false);
           } else {
             navigate("/queue");
-            toast.error("Appointment does not exist");
+            toast.error("Queue does not exist");
           }
         }
-
         fetchListing();
-    }, [navigate, params.appointmentID]);
+      }, [navigate, params.queueID]);
 
     useEffect(() => {
         if (scheduleID) {
@@ -79,6 +90,15 @@ export default function EditAppointment() {
             getDocs(q).then((querySnapshot) => {
             if (!querySnapshot.empty) {
               const doc = querySnapshot.docs[0].data();
+              //setResult(`Found document with ID ${scheduleID}. Field1: ${doc.startTime}, Field2: ${doc.endTime}`);
+
+              
+            //   setFormData({
+            //     ...formData,
+            //     scheduleStartTime: doc.startTime,
+            //     scheduleEndTime: doc.endTime,
+            //     doctorName: doc.doctorName
+            // })
 
             const newData = {
               ...formData,
@@ -143,6 +163,15 @@ export default function EditAppointment() {
         [e.target.id]: e.target.value,
       }));
     }
+    
+    function onDateChange() {
+      const formattedDate = formatDate(startDate);
+      setFormData(prevFormData => ({
+        ...prevFormData,
+        queueDate: formattedDate
+      }));
+      console.log(formattedDate)
+    }
 
     async function onSubmit(e) {
         e.preventDefault();
@@ -150,13 +179,13 @@ export default function EditAppointment() {
         setLoading(true);
         try {
           
-          const docRef = doc(db, "queue", params.appointmentID);
+          const docRef = doc(db, "queue", params.queueID);
             await updateDoc(docRef, {
             ...formData,
             });
           setLoading(false);
           toast.success("Changes Saved");
-          navigate("/appointments")
+          navigate("/queue")
           }
 
         catch (error) {
@@ -172,13 +201,23 @@ export default function EditAppointment() {
             const documentRef = doc(db, 'queue', params.queueID);
             await deleteDoc(documentRef);
               toast.success("Successfully remove from Queue");
-              navigate("/appointments");
+              navigate("/queue");
               setLoading(false);
             }catch (error){
               toast.error("Error deleting document: ", error);
               setLoading(false);
             }
 
+    }
+
+    const [isPatientOpen, setIsPatientOpen] = useState(false);
+
+    function closePatientModal() {
+        setIsPatientOpen(false);
+    }
+
+    function openPatientModal() {
+        setIsPatientOpen(true);
     }
 
     const [isScheduleOpen, setIsScheduleOpen] = useState(false);
@@ -189,6 +228,13 @@ export default function EditAppointment() {
 
     function openScheduleModal() {
         setIsScheduleOpen(true);
+    }
+
+    function getPatientID (e){
+        setFormData({
+          ...formData,
+          patientID: e
+      })
     }
 
     function getScheduleID (e){
@@ -209,12 +255,13 @@ export default function EditAppointment() {
       <h1 className="text-3xl text-center mt-6 font-bold">Edit Appointment</h1>
       <form onSubmit={onSubmit}>
         
-        <p className="text-lg mt-6 font-semibold">Queue Number</p>
+
+        <p className="text-lg mt-6 font-semibold">Appointment Number</p>
         <input
           type="text"
           id="queueNumber"
           value={queueNumber}
-          
+          onChange={onChange}
           placeholder="Queue Number"
           maxLength="32"
           required
@@ -224,6 +271,8 @@ export default function EditAppointment() {
         />
 
 <div className="border border-gray-400 px-4 py-3 rounded-lg mb-5" >
+
+
         <p className="text-lg font-semibold">Patient ID</p>
         <input
           type="text"
@@ -263,18 +312,28 @@ export default function EditAppointment() {
           required
           disabled
           className="w-full px-4 py-2 text-lg text-gray-700 bg-white border border-gray-300 
-          rounded transition duration-150 ease-in-out focus:text-gray-700 focus:bg-white focus:border-slate-600 mb-2"
+          rounded transition duration-150 ease-in-out focus:text-gray-700 focus:bg-white focus:border-slate-600 mb-6"
         />
-        </div>
 
-        <div className="border border-gray-400 px-4 py-3 rounded-lg mb-5" >
+<button
+     type="button"
+     onClick={openPatientModal}
+      className="mb-6 w-full px-7 py-2 bg-amber-700 text-white font-medium text-sm uppercase rounded shadow-md
+        hover:bg-amber-800 hover:shadow-lg focus:bg-amber-800 focus:shadow-lg
+        active:bg-amber-950 active:shadow-lg transition duration-150 ease-in-out"
+        >
+
+      Select Patient
+    </button>
+
+</div>
+<div className="border border-gray-400 px-4 py-3 rounded-lg mb-5" >
         <p className="text-lg font-semibold">Appointment Date</p>
         <input
           type="date"
           id="queueDate"
           dateFormat="MM/dd/yyyy"
           value={queueDate}
-          selected={queueDate}
           onChange={onChange}
           placeholder="Appointment Date"
           required
@@ -282,7 +341,7 @@ export default function EditAppointment() {
           rounded transition duration-150 ease-in-out focus:text-gray-700 focus:bg-white focus:border-slate-600 mb-6"
         />
 
-
+        
 
         <p className="text-lg font-semibold">Schedule ID</p>
         <input
@@ -327,8 +386,6 @@ export default function EditAppointment() {
           focus:outline-none focus:shadow-outline-purple focus:border-purple-500"
         />
 
-
-
         <p className="text-lg font-semibold">Schedule End Time</p>
         <TimePicker
           id="scheduleEndTime"
@@ -352,7 +409,7 @@ export default function EditAppointment() {
             >
             Select Schedule & Doctor
         </button>
-      
+        
         </div>
 
         <p className="text-lg font-semibold">Appointment Description</p>
@@ -369,7 +426,7 @@ export default function EditAppointment() {
         />
 
 
-        {/* <p className="text-lg font-semibold">Queue Status</p>
+        <p className="text-lg font-semibold">Queue Status</p>
         <select
         id="queueStatus"
         value={queueStatus}
@@ -382,17 +439,17 @@ export default function EditAppointment() {
         <option className=" text-gray-700" value="Set">Set</option>
         <option className=" text-gray-700" value="Completed">Completed</option>
         <option className=" text-gray-700" value="Missed">Missed</option>
-      </select> */}
+      </select>
         
       
 
     <button
       type="submit"
-      className="mb-4 w-full px-7 py-2 bg-green-600 text-white font-medium text-sm uppercase rounded shadow-md
+      className="mb-6 w-full px-7 py-2 bg-green-600 text-white font-medium text-sm uppercase rounded shadow-md
         hover:bg-green-700 hover:shadow-lg focus:bg-green-700 focus:shadow-lg
         active:bg-green-800 active:shadow-lg transition duration-150 ease-in-out"
     >
-      Submit Appointment Request
+      Save Changes
     </button>
       </form>
       <button
@@ -403,6 +460,71 @@ export default function EditAppointment() {
       Delete from Queue
     </button>
     </main>
+
+    <Transition appear show={isPatientOpen} as={Fragment}>
+        <Dialog
+          as="div"
+          className="fixed inset-0 z-10 overflow-y-auto"
+          onClose={closePatientModal}
+        >
+          <div className="min-h-screen px-4 text-center">
+            <Transition.Child
+              as={Fragment}
+              enter="ease-out duration-300"
+              enterFrom="opacity-0"
+              enterTo="opacity-100"
+              leave="ease-in duration-200"
+              leaveFrom="opacity-100"
+              leaveTo="opacity-0"
+            >
+              <Dialog.Overlay className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
+            </Transition.Child>
+
+            <span
+              className="inline-block h-screen align-middle"
+              aria-hidden="true"
+            >
+              &#8203;
+            </span>
+
+            <Transition.Child
+              as={Fragment}
+              enter="ease-out duration-300"
+              enterFrom="opacity-0 scale-95"
+              enterTo="opacity-100 scale-100"
+              leave="ease-in duration-200"
+              leaveFrom="opacity-100 scale-100"
+              leaveTo="opacity-0 scale-95"
+            >
+              <div className="inline-block w-full max-w-3xl p-6 my-8 overflow-hidden text-left align-middle transition-all transform bg-white shadow-xl rounded-2xl">
+                <div className="absolute top-0 right-0 pt-4 pr-4">
+                  <button
+                    type="button"
+                    className="text-gray-400 hover:text-gray-500 focus:outline-none focus:text-gray-500 transition ease-in-out duration-150"
+                    onClick={closePatientModal}
+                  >
+                    <span className="sr-only">Close</span>
+                    <XIcon className="h-6 w-6" aria-hidden="true" />
+                  </button>
+                </div>
+                <Dialog.Title
+                  as="h3"
+                  className="text-lg font-medium leading-6 text-gray-900"
+                >
+                  Choose Patien
+                </Dialog.Title> 
+                <div className="mt-2">
+                  <p className="text-sm text-gray-500">
+                    The following are all patients registered in the system
+                  </p>
+                  {/* Insert your content here */}
+                  {isPatientOpen && <SelectPatientList closePatientModal={closePatientModal} getPatientID={getPatientID} />}
+                </div>
+              </div>
+            </Transition.Child>
+          </div>
+        </Dialog>
+    </Transition>
 
     <Transition appear show={isScheduleOpen} as={Fragment}>
       <Dialog

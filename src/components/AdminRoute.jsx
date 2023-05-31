@@ -8,7 +8,7 @@ import Spinner from './Spinner';
 export default function AdminRoute() {
     const {loggedIn, checkingStatus, isAdmin } = useAuthStatus();
 
-    console.log("meow", loggedIn, checkingStatus, isAdmin)
+  
     if (checkingStatus) {
       return <Spinner />
   }

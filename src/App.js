@@ -1,9 +1,9 @@
 
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Home from './modules/Home';
-import SignIn from './modules/SignIn';
-import SignUp from './modules/SignUp';
-import Profile from './modules/Profile';
+import Home from './modules/publicModules/Home';
+import SignIn from './modules/publicModules/SignIn';
+import SignUp from './modules/publicModules/SignUp';
+import Profile from './modules/publicModules/Profile';
 import Header from './components/Header';
 
 import PrivateRoute from './components/PrivateRoute';
@@ -12,30 +12,42 @@ import AdminRoute from './components/AdminRoute';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-import Schedules from './modules/Schedules';
-import CreateSchedules from './modules/CreateSchedule';
-import EditSchedules from './modules/EditSchedule';
+import Schedules from './modules/adminModules/Schedules';
+import CreateSchedules from './modules/adminModules/CreateSchedule';
+import EditSchedules from './modules/adminModules/EditSchedule';
 
-import Patients from './modules/Patients';
-import CreatePatient from './modules/CreatePatient';
-import EditPatient from './modules/EditPatient';
+import Patients from './modules/adminModules/Patients';
+import CreatePatient from './modules/adminModules/CreatePatient';
+import EditPatient from './modules/adminModules/EditPatient';
 
-import Billing from './modules/Billing';
-import CreateBills from './modules/CreateBills';
-import EditBills from './modules/EditBills';
+import Billing from './modules/adminModules/Billing';
+import CreateBills from './modules/adminModules/CreateBills';
+import EditBills from './modules/adminModules/EditBills';
 
-import Queue from './modules/Queue';
-import CreateQueue from './modules/CreateQueue';
-import EditQueue from './modules/EditQueue';
-import CreateAppointment from './modules/CreateAppointment';
-import Appointments from './modules/Appointments';
-import PatientHistory from './modules/PatientHistory';
-import StatementOfAccount from './modules/StatementOfAccount';
-import EditAppointment from './modules/EditAppointment';
-import ShowHistory from './modules/ShowHistory';
-import ShowStatementOfAccount from './modules/ShowStatementOfAccount';
+import Doctors from './modules/adminModules/Doctors';
+import CreateDoctors from './modules/adminModules/CreateDoctors';
+import EditDoctors from './modules/adminModules/EditDoctors';
+
+
+import Queue from './modules/adminModules/Queue';
+import CreateQueue from './modules/adminModules/CreateQueue';
+import EditQueue from './modules/adminModules/EditQueue';
+import CreateAppointment from './modules/patientModules/CreateAppointment';
+import Appointments from './modules/patientModules/Appointments';
+import PatientHistory from './modules/patientModules/PatientHistory';
+import StatementOfAccount from './modules/patientModules/StatementOfAccount';
+import EditAppointment from './modules/patientModules/EditAppointment';
+import ShowHistory from './modules/patientModules/ShowHistory';
+import ShowStatementOfAccount from './modules/patientModules/ShowStatementOfAccount';
+
+import CheckIn from './modules/patientModules/CheckIn';
+import SelectCheckIn from './modules/patientModules/SelectCheckIn';
+import ConfirmCheckIn from './modules/patientModules/ConfirmCheckIn.jsx';
+
+import WaitingQueue from './modules/adminModules/WaitingQueue';
 
 import { Helmet } from 'react-helmet';
+
 
 function App() {
   return (
@@ -67,6 +79,10 @@ function App() {
           <Route path="/statement-of-account" element={<PrivateRoute />}><Route path="/statement-of-account" element={<StatementOfAccount/>}/></Route>
           <Route path="/show-statement-of-account/:billID" element={<PrivateRoute />}><Route path="/show-statement-of-account/:billID" element={<ShowStatementOfAccount/>}/></Route>
 
+          <Route path="/check-in" element={<PrivateRoute />}><Route path="/check-in" element={<CheckIn/>}/></Route>
+          <Route path="/check-in-select" element={<PrivateRoute />}><Route path="/check-in-select"  element={<SelectCheckIn/>}/></Route>
+          <Route path="/check-in-confirm/:appointmentID" element={<PrivateRoute />}><Route path="/check-in-confirm/:appointmentID" element={<ConfirmCheckIn/>}/></Route>
+
           {/* Admin */}
           <Route path="/schedules" element={<AdminRoute />}><Route path="/schedules" element={<Schedules/>}/></Route>
           <Route path="/create-schedule" element={<AdminRoute />}><Route path="/create-schedule" element={<CreateSchedules/>}/></Route>
@@ -83,6 +99,16 @@ function App() {
           <Route path="/queue" element={<AdminRoute />}><Route path="/queue" element={<Queue/>}/></Route>
           <Route path="/create-queue" element={<AdminRoute />}><Route path="/create-queue" element={<CreateQueue/>}/></Route>
           <Route path="/edit-queue/:queueID" element={<AdminRoute />}><Route path="/edit-queue/:queueID" element={<EditQueue/>}/></Route>
+          
+         <Route path="/waiting-queue" element={<AdminRoute />}><Route path="/waiting-queue" element={<WaitingQueue/>}/></Route>
+          <Route path="/create-queue" element={<AdminRoute />}><Route path="/create-queue" element={<CreateQueue/>}/></Route>
+          <Route path="/edit-queue/:queueID" element={<AdminRoute />}><Route path="/edit-queue/:queueID" element={<EditQueue/>}/></Route>
+
+          <Route path="/doctors" element={<AdminRoute />}><Route path="/doctors" element={<Doctors/>}/></Route>
+          <Route path="/create-doctors" element={<AdminRoute />}><Route path="/create-doctors" element={<CreateDoctors/>}/></Route>
+          <Route path="/edit-doctors/:doctorID" element={<AdminRoute />}><Route path="/edit-doctors/:doctorID" element={<EditDoctors/>}/></Route>
+
+
     
         </Routes>
       </Router>

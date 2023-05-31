@@ -1,11 +1,11 @@
 import {useEffect, useState} from 'react'
 import { toast } from "react-toastify";
-import Spinner from "../components/Spinner";
+import Spinner from "../../components/Spinner";
 
 import { getAuth } from "firebase/auth";
-import { addDoc, collection, serverTimestamp,query,orderBy,limit,getDocs,where, onSnapshot, doc, getDoc, Firestore } from "firebase/firestore";
-import { app, db } from "../firebase/firebase";
-import { useNavigate } from "react-router-dom";
+import { addDoc, collection, serverTimestamp,query,orderBy,limit,getDocs,where, onSnapshot, doc, getDoc, Firestore, updateDoc,deleteDoc } from "firebase/firestore";
+import { app, db } from "../../firebase/firebase";
+import { useNavigate, useParams } from "react-router-dom";
 import TimePicker from 'react-time-picker';
 import 'react-time-picker/dist/TimePicker.css';
 import 'react-clock/dist/Clock.css';
@@ -16,20 +16,14 @@ import "react-datepicker/dist/react-datepicker.css";
 import { Dialog, Transition } from '@headlessui/react';
 import { Fragment } from 'react';
 import { XIcon } from '@heroicons/react/outline';
+import SelectPatientList from '../../functions/SelectPatientList';
+import SelectScheduleList from '../../functions/SelectScheduleList';
 
-import SelectScheduleList from '../functions/SelectScheduleList';
 
-
-export default function CreateAppointment() {
+export default function EditAppointment() {
     const [loading, setLoading] = useState(false);
     const auth = getAuth()
     const navigate = useNavigate()
-
-    const [currQueueNum, setCurrQueueNum] = useState(0);
-    //const [newNum, setNewNum] = useState(0);
-    //const [searchTerm, setSearchTerm] = useState('');
-
-    const [startDate, setStartDate] = useState(new Date());
 
     const [formData, setFormData] = useState({
         queueNumber: "",
@@ -59,104 +53,32 @@ export default function CreateAppointment() {
         queueStatus
     } = formData;
 
+    const params =  useParams();
+
     useEffect(() => {
-        const getUsers = async () => {
-          try {
-            setLoading(true);
-            const usersRef = collection(db, "queue");
-            const q = query(usersRef, orderBy("queueNumber", "desc"), limit(1));
-            const q1 = doc(db, "users", auth.currentUser.uid);
-            const [queueSnapshot, userSnapshot] = await Promise.all([
-              getDocs(q),
-              getDoc(q1)
-            ]);
+        setLoading(true);
 
-            if (queueSnapshot.size === 0) {
-                const newData = {
-                    ...formData,
-                    queueNumber: 1,
-                    };
-                setFormData(newData);
-            } else {
-                if (userSnapshot.exists()) {
-                    const highestScore = queueSnapshot.docs[0].data().queueNumber;
-                    const newNum1 = highestScore + 1;
-
-                    const newData = {
-                        ...formData ,
-                            queueNumber: newNum1,
-                            patientID: auth.currentUser.uid,
-                            patientName: userSnapshot.data().name,
-                            patientEmail: userSnapshot.data().email
-                        };
-                    setFormData(newData);
-                    }
-            }
+        async function fetchListing() {
+          const docRef = doc(db, "queue", params.appointmentID);
+          const docSnap = await getDoc(docRef);
+          if (docSnap.exists()) {
+              setFormData({...docSnap.data()});
             setLoading(false);
-          } catch (error) {
-            console.error(error);
-            setLoading(false);
+          } else {
+            navigate("/queue");
+            toast.error("Appointment does not exist");
           }
-        };
-        getUsers();
-      }, []);
+        }
 
-
-    // useEffect(() => {
-    //     const fetchNewQueueNumber = async () => {
-    //         setLoading(true);
-    //         const usersRef = collection(db, "queue");
-    //         const q = query(usersRef, orderBy("queueNumber", "desc"), limit(1));
-    //         const querySnapshot = await getDocs(q);
-        
-    //         if (querySnapshot.size === 0) {
-    //             const newData = {
-    //                 ...formData,
-    //                 queueNumber: 1,
-    //               };
-    //             setFormData(newData);
-    //         } else {
-    //             const highestScore = querySnapshot.docs[0].data().queueNumber;
-    //             const newNum1 = highestScore + 1;
-    //             const newData = {
-    //                 ...formData,
-    //                 queueNumber: newNum1,
-    //               };
-    //             setFormData(newData);
-
-    //         }
-    //         setLoading(false);
-    //     };
-
-    //     const fetchListing = async () => {
-    //       const docRef = doc(db, "users", auth.currentUser.uid);
-    //       const docSnap = await getDoc(docRef);
-    //       if (docSnap.exists()) {
-
-    //         const newData = {
-    //             ...formData ,
-    //                 patientID: auth.currentUser.uid,
-    //                 patientName: docSnap.data().name,
-    //                 patientEmail: docSnap.data().email
-    //           };
-    //         setFormData(newData);
-            
-    //       } else {
-    //         navigate("/profile");
-    //         toast.error("Critical Error: User does not exist");
-    //       }
-    //     }
-    //     fetchListing();
-    //     fetchNewQueueNumber();
-
-    // }, [navigate, auth.currentUser.uid]);
+        fetchListing();
+    }, [navigate, params.appointmentID]);
 
     useEffect(() => {
         if (scheduleID) {
             const q = query(collection(db, 'schedules'), where('__name__', '==', scheduleID));
             getDocs(q).then((querySnapshot) => {
             if (!querySnapshot.empty) {
-            const doc = querySnapshot.docs[0].data();
+              const doc = querySnapshot.docs[0].data();
 
             const newData = {
               ...formData,
@@ -167,7 +89,7 @@ export default function CreateAppointment() {
             setFormData(newData);
 
             } else {
-            
+              //console.log(`No document found with ID ${scheduleID}`);
               
               const newData = {
                 ...formData,
@@ -228,23 +150,35 @@ export default function CreateAppointment() {
         setLoading(true);
         try {
           
-        const newData = {
+          const docRef = doc(db, "queue", params.appointmentID);
+            await updateDoc(docRef, {
             ...formData,
-            queueStatus: "Pending"
-            };
-            setFormData(newData);
-
-        console.log(newData)
-        await addDoc(collection(db, "queue"), newData);
-        setLoading(false);
-        toast.success("Appointment Request Submitted");
-        navigate("/appointments")
-        }
+            });
+          setLoading(false);
+          toast.success("Changes Saved");
+          navigate("/appointments")
+          }
 
         catch (error) {
           console.log(error)
-          toast.error("Request Submission Failed\n" + error);
+          toast.error("Changes Failed\n" + error);
+          setLoading(false);
         }
+    }
+
+    async function onClickDelete() {
+        setLoading(true);
+        try {
+            const documentRef = doc(db, 'queue', params.queueID);
+            await deleteDoc(documentRef);
+              toast.success("Successfully remove from Queue");
+              navigate("/appointments");
+              setLoading(false);
+            }catch (error){
+              toast.error("Error deleting document: ", error);
+              setLoading(false);
+            }
+
     }
 
     const [isScheduleOpen, setIsScheduleOpen] = useState(false);
@@ -264,14 +198,15 @@ export default function CreateAppointment() {
       })
     }
 
+
+
     if (loading) {
         return <Spinner />;
       }
   return (
     <>
     <main className="max-w-md px-2 mx-auto">
-    <h1 className="text-3xl text-center mt-10 font-bold">Request an Appointment</h1>
-      <p className='text-1xl text-center mt-3 font-semibold'>Fill the following form to request an appointment with the hospital</p>
+      <h1 className="text-3xl text-center mt-6 font-bold">Edit Appointment</h1>
       <form onSubmit={onSubmit}>
         
         <p className="text-lg mt-6 font-semibold">Queue Number</p>
@@ -393,7 +328,6 @@ export default function CreateAppointment() {
         />
 
 
-      
 
         <p className="text-lg font-semibold">Schedule End Time</p>
         <TimePicker
@@ -418,7 +352,9 @@ export default function CreateAppointment() {
             >
             Select Schedule & Doctor
         </button>
-</div>
+      
+        </div>
+
         <p className="text-lg font-semibold">Appointment Description</p>
         <textarea
           type="text"
@@ -452,13 +388,20 @@ export default function CreateAppointment() {
 
     <button
       type="submit"
-      className="mb-6 w-full px-7 py-2 bg-green-600 text-white font-medium text-sm uppercase rounded shadow-md
+      className="mb-4 w-full px-7 py-2 bg-green-600 text-white font-medium text-sm uppercase rounded shadow-md
         hover:bg-green-700 hover:shadow-lg focus:bg-green-700 focus:shadow-lg
         active:bg-green-800 active:shadow-lg transition duration-150 ease-in-out"
     >
       Submit Appointment Request
     </button>
       </form>
+      <button
+      onClick={onClickDelete}
+      className='mb-6 w-full bg-amber-700 text-white px-7 py-2 text-sm font-medium uppercase rounded shadow-md 
+            hover:bg-amber-800 transition duration-150 ease-in-out hover:shadow-lg active:bg-amber-900'
+    >
+      Delete from Queue
+    </button>
     </main>
 
     <Transition appear show={isScheduleOpen} as={Fragment}>

@@ -42,26 +42,38 @@ export default function Header() {
             </div>
 
             <div>
-                <ul className='flex space-x-5'>
+                <ul className='flex ml-auto space-x-5'>
+
+                    {loggedIn && (isAdmin && (<li className={`py-3 text-sm text-center font-semibold text-gray-400 border-b-[5px] cursor-pointer border-transparent transition duration-300
+                    ${pathMatchRoute("/waiting-queue") && "text-gray-900 border-b-green-500"}`}
+                    onClick={()=> navigate("/waiting-queue")}>Waiting Queue</li>))}
+
 
                     {loggedIn && (isAdmin && (<li className={`py-3 text-sm text-center font-semibold text-gray-400 border-b-[5px] cursor-pointer border-transparent transition duration-300
                     ${pathMatchRoute("/queue") && "text-gray-900 border-b-green-500"}`}
-                    onClick={()=> navigate("/queue")}>Appointment Queue</li>))}
+                    onClick={()=> navigate("/queue")}>Appointments</li>))}
 
                     {loggedIn && (isAdmin && (<li className={`py-3 text-sm text-center font-semibold text-gray-400 border-b-[5px] cursor-pointer border-transparent transition duration-300
                         ${pathMatchRoute("/schedules") && "text-gray-900 border-b-green-500"}`}
-                        onClick={()=> navigate("/schedules")}>Schedule Management</li>))}
+                        onClick={()=> navigate("/schedules")}>Schedules</li>))}
+
+                    {loggedIn && (isAdmin && (<li className={`py-3 text-sm text-center font-semibold text-gray-400 border-b-[5px] cursor-pointer border-transparent transition duration-300
+                    ${pathMatchRoute("/doctors") && "text-gray-900 border-b-green-500"}`}
+                    onClick={()=> navigate("/doctors")}>Doctors</li>))}
                         
                     {loggedIn && (isAdmin && (<li className={`py-3 text-sm text-center font-semibold text-gray-400 border-b-[5px] cursor-pointer border-transparent transition duration-300
                         ${pathMatchRoute("/patients") && "text-gray-900 border-b-green-500"}`}
-                        onClick={()=> navigate("/patients")}>Patient Management</li>))}
+                        onClick={()=> navigate("/patients")}>Patients</li>))}
 
                     {loggedIn && (isAdmin && (<li className={`py-3 text-sm text-center font-semibold text-gray-400 border-b-[5px] cursor-pointer border-transparent transition duration-300
                         ${pathMatchRoute("/billing") && "text-gray-900 border-b-green-500"}`}
                         onClick={()=> navigate("/billing")}>Billing</li>))}
 
 
-                    
+                    {loggedIn && (!isAdmin && (<li className={`py-3 text-sm text-center font-semibold text-gray-400 border-b-[5px] cursor-pointer border-transparent transition duration-300
+                    ${pathMatchRoute("/check-in") && "text-gray-900 border-b-green-500"}`}
+                    onClick={()=> navigate("/check-in")}>Queue and Check In</li>))}
+
                     {loggedIn && (!isAdmin && (<li className={`py-3 text-sm text-center font-semibold text-gray-400 border-b-[5px] cursor-pointer border-transparent transition duration-300
                         ${pathMatchRoute("/create-appointment") && "text-gray-900 border-b-green-500"}`}
                         onClick={()=> navigate("/create-appointment")}>Schedule an Appointment</li>))}

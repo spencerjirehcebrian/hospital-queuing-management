@@ -1,17 +1,17 @@
 import React, { useState } from 'react'
 import { HiOutlineEyeOff, HiOutlineEye } from "react-icons/hi";
 import { Link } from 'react-router-dom';
-import OAuth from '../components/OAuth'
+import OAuth from '../../components/OAuth'
 import {
   getAuth,
   createUserWithEmailAndPassword,
   updateProfile,
 } from "firebase/auth";
-import { db } from "../firebase/firebase";
+import { db } from "../../firebase/firebase";
 import { doc, serverTimestamp, setDoc } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import Spinner from "../components/Spinner";
+import Spinner from "../../components/Spinner";
 
 export default function SignUp() {
 
@@ -58,6 +58,8 @@ async function onSubmit(e) {
     formDataCopy.timestamp = serverTimestamp();
     formDataCopy.isAdmin = false;
     formDataCopy.isPatient = true;
+    formDataCopy.isCheckedIn = true;
+    formDataCopy.isDoctor = false;
 
     await setDoc(doc(db, "users", id.uid), formDataCopy);
     setLoading(false)

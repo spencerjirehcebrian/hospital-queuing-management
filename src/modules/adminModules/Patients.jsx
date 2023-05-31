@@ -1,6 +1,6 @@
 import React from 'react'
 import { useNavigate } from "react-router-dom";
-import PatientList from '../functions/PatientList';
+import PatientList from '../../functions/PatientList';
 
 export default function Schedules() {
 

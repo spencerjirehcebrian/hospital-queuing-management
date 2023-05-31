@@ -36,8 +36,6 @@ export function useAuthStatus() {
             
         })
     }, [])
-
-    console.log("hook", loggedIn, checkingStatus, isAdmin)
     
   return { loggedIn, checkingStatus, isAdmin }
 }

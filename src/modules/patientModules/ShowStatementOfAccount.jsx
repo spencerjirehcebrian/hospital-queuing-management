@@ -3,7 +3,7 @@ import { toast } from "react-toastify";
 
 import { getAuth } from "firebase/auth";
 import { addDoc, collection, serverTimestamp, doc, updateDoc, getDoc, deleteDoc } from "firebase/firestore";
-import { db } from "../firebase/firebase";
+import { db } from "../../firebase/firebase";
 import { useNavigate, useParams } from "react-router-dom";
 
 export default function ShowStatementOfAccount() {

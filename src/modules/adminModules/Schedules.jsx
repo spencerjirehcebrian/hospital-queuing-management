@@ -1,6 +1,6 @@
 import React from 'react'
 import { useNavigate } from "react-router-dom";
-import ScheduleList from '../functions/ScheduleList';
+import ScheduleList from '../../functions/ScheduleList';
 
 export default function Schedules() {
 

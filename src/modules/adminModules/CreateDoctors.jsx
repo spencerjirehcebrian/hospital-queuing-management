@@ -1,23 +1,24 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { HiOutlineEyeOff, HiOutlineEye } from "react-icons/hi";
-import { useNavigate, Link, useParams } from 'react-router-dom';
-import OAuth from '../components/OAuth'
+import { Link } from 'react-router-dom';
+import OAuth from '../../components/OAuth'
 
-import Spinner from "../components/Spinner";
+import Spinner from "../../components/Spinner";
 
 
 import {
   getAuth,
   createUserWithEmailAndPassword,
   updateProfile,
-  setPersistence, browserLocalPersistence, browserSessionPersistence
+  setPersistence, browserLocalPersistence, browserSessionPersistence    
 } from "firebase/auth";
-import { db } from "../firebase/firebase";
-import { doc, serverTimestamp, setDoc, getDoc } from "firebase/firestore";
+import { db } from "../../firebase/firebase";
+import { doc, serverTimestamp, setDoc } from "firebase/firestore";
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
 
-export default function EditPatient() {
+export default function CreatePatient() {
     const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({
         name: "",
@@ -27,28 +28,8 @@ export default function EditPatient() {
         password: "",
     });
 
-    // const [showPassword, setShowPassword] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
     const [startDOB, setStartDOB] = useState(false);
-
-    const params =  useParams();
-    const navigate = useNavigate()
-
-    useEffect(() => {
-        setLoading(true);
-
-        async function fetchListing() {
-          const docRef = doc(db, "users", params.patientID);
-          const docSnap = await getDoc(docRef);
-          if (docSnap.exists()) {
-            setFormData({...docSnap.data()});
-            setLoading(false);
-          } else {
-            navigate("/patients");
-            toast.error("Patient does not exist");
-          }
-        }
-        fetchListing();
-      }, [navigate, params.patientID    ]);
 
     function onChange(e) {
       setFormData((prevState) => ({
@@ -57,27 +38,38 @@ export default function EditPatient() {
       }))
     }
 
+    const navigate = useNavigate()
+
     async function onSubmit(e) {
     e.preventDefault();
     setLoading(true)
 
     try {
         const auth = getAuth()
+        
         updateProfile(auth.currentUser, {
         displayName: name,
         })
 
+        await setPersistence(auth, browserSessionPersistence);
+
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password)
+
+        const user = userCredential.user
+        console.log(user);
+        const id = auth.currentUser
         const formDataCopy = {...formData}
         delete formDataCopy.password
         
+        formDataCopy.timestamp = serverTimestamp();
         formDataCopy.isAdmin = false;
         formDataCopy.isPatient = true;
 
-        await setDoc(doc(db, "users", params.patientID), formDataCopy);
+        await setDoc(doc(db, "users", id.uid), formDataCopy);
         setLoading(false)
-        toast.success("Successfully Saved Changes")
+        toast.success("Successfully Registered Up")
 
-        navigate("/patients")
+        navigate("/profile")
 
     } catch (error) {
         console.log(error);
@@ -95,7 +87,7 @@ export default function EditPatient() {
   return (
 <section>
 
-  <h1 className='text-3xl text-center mt-6 font-bold'>Edit Patient Information</h1>
+  <h1 className='text-3xl text-center mt-6 font-bold'>Register a Patient</h1>
   <div className='flex justify-center flex-wrap items-center px-6 py-12 max-w-6xl mx-auto'>
     
     <div className="w-full md:w-[40%] lg:w-[50%]">
@@ -133,12 +125,30 @@ export default function EditPatient() {
         id="email"
         value={email} 
         onChange={onChange}
-        disabled
         placeholder='Email Address'/>
+     
 
-      <button className='w-full bg-green-700 text-white px-7 py-3 text-sm font-medium uppercase rounded shadow-md 
-      hover:bg-green-800 transition duration-150 ease-in-out hover:shadow-lg active:bg-green-900'
-      type='submit'>Save Changes</button>
+      <div className='relative mb-6'>
+        <form>
+          <input className="w-full px-4 py-2 text-lg text-gray-700 bg-white border-gray-300 rounded transition ease-in-out" 
+          type={showPassword ? "text" : "password"}  
+          id="password"
+          value={password}  
+          onChange={onChange}
+          placeholder='Password'/>
+        </form>
+
+        {showPassword ? (<HiOutlineEyeOff className="absolute right-3 top-3 text-xl cursor-pointer"
+        onClick={()=>setShowPassword((prevState) => !prevState)}/> )
+        : 
+        (<HiOutlineEye className="absolute right-3 top-3 text-xl cursor-pointer"
+        onClick={()=>setShowPassword((prevState) => !prevState)}/>)
+        }
+      </div>
+
+      <button className='w-full bg-amber-700 text-white px-7 py-3 text-sm font-medium uppercase rounded shadow-md 
+      hover:bg-amber-800 transition duration-150 ease-in-out hover:shadow-lg active:bg-amber-900'
+      type='submit'>Register then Sign In as Patient</button>
       </form>
     </div>
   </div>

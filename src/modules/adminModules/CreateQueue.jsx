@@ -1,10 +1,10 @@
 import {useEffect, useState} from 'react'
 import { toast } from "react-toastify";
-import Spinner from "../components/Spinner";
+import Spinner from "../../components/Spinner";
 
 import { getAuth } from "firebase/auth";
 import { addDoc, collection, serverTimestamp,query,orderBy,limit,getDocs,where, onSnapshot, doc, getDoc, Firestore } from "firebase/firestore";
-import { app, db } from "../firebase/firebase";
+import { app, db } from "../../firebase/firebase";
 import { useNavigate } from "react-router-dom";
 import TimePicker from 'react-time-picker';
 import 'react-time-picker/dist/TimePicker.css';
@@ -16,8 +16,8 @@ import "react-datepicker/dist/react-datepicker.css";
 import { Dialog, Transition } from '@headlessui/react';
 import { Fragment } from 'react';
 import { XIcon } from '@heroicons/react/outline';
-import SelectPatientList from '../functions/SelectPatientList';
-import SelectScheduleList from '../functions/SelectScheduleList';
+import SelectPatientList from '../../functions/SelectPatientList';
+import SelectScheduleList from '../../functions/SelectScheduleList';
 
 
 export default function CreateQueue() {
