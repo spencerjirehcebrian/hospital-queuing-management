@@ -76,6 +76,7 @@ function ScheduleList() {
           onClick={()=>navigate(`/edit-schedule/${schedule.id}`)}>
             <h2 className="text-xl font-semibold">{schedule.name}</h2>
             <p><span className="font-semibold">Doctor Name: </span> {schedule.doctorName}</p>
+            <p><span className="font-semibold">Department: </span> {schedule.departmentName}</p>
             <p><span className="font-semibold">Time Slot</span>: {schedule.startTime} - {schedule.endTime}</p>
             <span className="font-semibold">Days Availiable: </span> 
             <span className={schedule.isSunday ? "text-green-600 font-bold" : "text-gray-400 "}>Sun </span>

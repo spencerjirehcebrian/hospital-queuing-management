@@ -1,10 +1,9 @@
 import React, {useState, useEffect} from 'react'
 import { db } from "../../firebase/firebase";
-import { getFirestore, collection, onSnapshot, updateDoc, doc, getDoc, query, where, getDocs } from 'firebase/firestore';
+import { getFirestore, collection, onSnapshot, updateDoc, doc, getDoc, query, where, getDocs, serverTimestamp } from 'firebase/firestore';
 
 import { useNavigate } from "react-router-dom";
 import WaitingQueueList from '../../functions/WaitingQueueList.jsx';
-import CurrentWaitingQueueList from '../../functions/CurrentWaitingQueueList.jsx';
 import Spinner from '../../components/Spinner';
 
 export default function WaitingQueue() {
@@ -16,7 +15,6 @@ export default function WaitingQueue() {
 
     const [value, setValue] = useState(0);
     const [loading, setLoading] = useState(false);
-    const [refresh, setRefresh] = useState(false);
 
     useEffect(() => {
       setLoading(true)
@@ -65,8 +63,7 @@ export default function WaitingQueue() {
     };
 
     fetchData()
-    setRefresh(false)
-  }, [refresh]);
+  }, []);
 
 
   useEffect(() => {
@@ -106,10 +103,11 @@ export default function WaitingQueue() {
  
   async function updateQueueNumberDecrement() {
     const docRef = doc(db, 'globalVariables', 'aplmxmAVlIdS8vAVFOut');
-    setValue(value - 1)
     
+    setValue(value -1 )
+
     updateDoc(docRef, {
-      currentQueueNumber: value
+      currentQueueNumber: value - 1
     })
     .then(() => {
      
@@ -118,17 +116,15 @@ export default function WaitingQueue() {
       console.log('Error updating number:', error);
     });
 
-    setRefresh(true)
   }
-
 
   async function updateQueueNumberIncrement() {
     const docRef = doc(db, 'globalVariables', 'aplmxmAVlIdS8vAVFOut');
-    
+  
     setValue(value + 1)
-    
+
     updateDoc(docRef, {
-      currentQueueNumber: value
+      currentQueueNumber: value + 1
     })
     .then(() => {
 
@@ -136,7 +132,6 @@ export default function WaitingQueue() {
     .catch((error) => {
       console.log('Error updating number:', error);
     });
-    setRefresh(true)
     }
 
 
@@ -148,7 +143,8 @@ export default function WaitingQueue() {
 
     const documentRef = doc(db, collectionName, documentId);
     const updateData = {
-      [fieldToUpdate]: updatedValue
+      [fieldToUpdate]: updatedValue,
+      timeCompleted: serverTimestamp()
     };
 
     updateDoc(documentRef, updateData)
@@ -161,7 +157,6 @@ export default function WaitingQueue() {
 
       updateQueueNumberIncrement()
       updateQueueNumberDecrement()
-      setRefresh(true)
 
   };
 
@@ -186,11 +181,8 @@ export default function WaitingQueue() {
 
       updateQueueNumberIncrement()
       updateQueueNumberDecrement()
-      setRefresh(true)
   };
-  
-
-  
+   
   if (loading) {
     return <Spinner />;
   }
@@ -216,7 +208,7 @@ export default function WaitingQueue() {
 
         {empty && (<div className="grid grid-cols-1 gap-4">
         <div className="bg-white p-4 rounded-lg shadow flex justify-center">
-        <h2 className='items-center mt-12 mb-10 text-2xl'>Queue Empty</h2>
+        <h2 className='items-center mt-12 mb-10 text-2xl'>No Appointment Assigned to This Number</h2>
         </div>
 
         <div class="flex flex-grow space-x-5 mt-2 ">
@@ -242,10 +234,10 @@ export default function WaitingQueue() {
           onClick={()=>navigate(`/edit-queue/${queue.id}`)}>
             <p><span className="font-semibold">Patient Name: </span> {queue.patientName}</p>
             <p><span className="font-semibold">Attending Doctor: </span> {queue.doctorName}</p>
-            <p><span className="font-semibold">From: </span> {queue.scheduleStartTime} to {queue.scheduleEndTime}</p>
+            <p><span className="font-semibold">Department: </span> {queue.departmentName}</p>
+            <p><span className="font-semibold">From: </span> {queue.scheduleStartTime} <span className="font-semibold">to</span> {queue.scheduleEndTime}</p>
             <p><span className="font-semibold">Scheduled Date: </span> {queue.queueDate}</p>
             <p><span className="font-semibold">Status: </span> {queue.queueStatus}</p>
-            <p><span className="font-semibold">Status: </span> {queue.waitingQueueNumber}</p>
             </div>
         <div class="flex flex-grow space-x-5 mt-6 ">
           

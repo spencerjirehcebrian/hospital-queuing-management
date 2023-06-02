@@ -339,7 +339,7 @@ export default function CreateBills() {
           hover:bg-green-700 hover:shadow-lg focus:bg-green-700 focus:shadow-lg
           active:bg-green-800 active:shadow-lg transition duration-150 ease-in-out"
       >
-        Charge Customer
+        Update Bill
       </button>
         </form>
 

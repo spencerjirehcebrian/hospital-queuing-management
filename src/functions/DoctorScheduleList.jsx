@@ -1,62 +1,84 @@
 import { useEffect, useState } from 'react';
-import { collection, onSnapshot, query, where, orderBy } from 'firebase/firestore';
+import { collection, onSnapshot, query, where, orderBy, getDocs, getDoc } from 'firebase/firestore';
 import { db } from "../firebase/firebase";
 import { useNavigate } from "react-router-dom";
 import Spinner from "../components/Spinner";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 
-function SelectScheduleList(props) {
+function DoctorScheduleList() {
 
+    const auth = getAuth()
     const [schedules, setSchedules] = useState([]);
     const navigate = useNavigate()
     const [loading, setLoading] = useState(false);
 
     const [searchTerm, setSearchTerm] = useState('');
-
     useEffect(() => {
-
-      if (searchTerm){
-      const q = searchTerm
-        ? query(
-            collection(db, 'schedules'),
-            where('name', '>=', searchTerm),
-            where('name', '<=', searchTerm + '\uf8ff')
-          )
-        : collection(db, 'schedules', orderBy('name'));
-  
-      const unsubscribe = onSnapshot(q, (snapshot) => {
-        const schedulesData = snapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-        setSchedules(schedulesData);
-
-      });
-      return unsubscribe;
       
-      } else {
-          const unsubscribe = onSnapshot(collection(db, 'schedules'), (snapshot) => {
-          const schedulesData = snapshot.docs.map((doc) => ({
-            id: doc.id,
-            ...doc.data(),
-          }));
-          setSchedules(schedulesData);
+      const fetchData = async (e) => {
+            const q = query(
+            collection(db, "users"), where("email", "==", e));
+            const querySnapshot = await getDocs(q);
+            const doc = querySnapshot.docs[0];
+            const fieldValue = doc.data().name;
 
-        });
-        return unsubscribe;
-      }
+            
+            if (searchTerm){
+      
+              const q = searchTerm
+                ? query(
+                    collection(db, 'schedules'),
+                    where('doctorName', '==', doc.data().name),
+                    where('name', '>=', searchTerm),
+                    where('name', '<=', searchTerm + '\uf8ff')
+                  )
+                : collection(db, 'schedules', orderBy('name'));
+          
+              const unsubscribe = onSnapshot(q, (snapshot) => {
+                const schedulesData = snapshot.docs.map((doc) => ({
+                  id: doc.id,
+                  ...doc.data(),
+                }));
+                setSchedules(schedulesData);
+        
+              });
+              return unsubscribe;
+              
+              } else {
+                const q = query(
+                    collection(db, 'schedules'),
+                    where('doctorName', '==', doc.data().name)
+                  )
+          
+              const unsubscribe = onSnapshot(q, (snapshot) => {
+                const schedulesData = snapshot.docs.map((doc) => ({
+                  id: doc.id,
+                  ...doc.data(),
+                }));
+                setSchedules(schedulesData);
+        
+                });
+                return unsubscribe;
+              }
+
+
+          };
+
+
+      
+      const auth = getAuth()
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                fetchData(user.email);
+            }
+          })
+         
+
     }, [searchTerm]);
   
     const handleSearch = (event) => {
       setSearchTerm(event.target.value);
     };
-
-    function onClickHandler() {
-      props.closeScheduleModal();
-    }
-
-    function handleClick(e) {
-     props.getScheduleID(e);
-    }
 
   if (loading) {
     return <Spinner />;
@@ -81,16 +103,9 @@ function SelectScheduleList(props) {
         {schedules.map((schedule) => (
           <div key={schedule.id} 
           className="bg-white p-4 rounded-lg shadow cursor-pointer"
-          onClick={() => {
-            handleClick(schedule.id);
-            onClickHandler();
-          }}
-          
-          
-          >
+          onClick={()=>navigate(`/edit-doctor-schedule/${schedule.id}`)}>
             <h2 className="text-xl font-semibold">{schedule.name}</h2>
-            <p><span className="font-semibold">Doctor Name: </span> {schedule.doctorName}</p>
-            <p><span className="font-semibold">Department Name: </span> {schedule.departmentName}</p>
+            <p><span className="font-semibold">Department: </span> {schedule.departmentName}</p>
             <p><span className="font-semibold">Time Slot</span>: {schedule.startTime} - {schedule.endTime}</p>
             <span className="font-semibold">Days Availiable: </span> 
             <span className={schedule.isSunday ? "text-green-600 font-bold" : "text-gray-400 "}>Sun </span>
@@ -107,4 +122,4 @@ function SelectScheduleList(props) {
   )
 }
 
-export default SelectScheduleList
+export default DoctorScheduleList

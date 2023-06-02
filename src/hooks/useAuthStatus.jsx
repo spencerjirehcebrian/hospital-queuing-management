@@ -9,6 +9,7 @@ import useAuthAdminStatus from "./useAuthAdminStatus"
 export function useAuthStatus() {
     const [loggedIn, setLoggedIn] = useState(false);
     const [isAdmin, setIsAdmin] = useState(false);
+    const [isDoctor, setIsDoctor] = useState(false);
     const [checkingStatus, setCheckingStatus] = useState(true);
 
 
@@ -20,9 +21,19 @@ export function useAuthStatus() {
             const q = query(
             collection(db, "users"), where("email", "==", e), where("isAdmin", "==", true));
             const querySnapshot = await getDocs(q);
+
+            const q2 = query(
+                collection(db, "users"), where("email", "==", e), where("isDoctor", "==", true));
+            const querySnapshot2 = await getDocs(q2);
+
+            
             setIsAdmin(!querySnapshot.empty);
+            setIsDoctor(!querySnapshot2.empty);
+
             setCheckingStatus(false);
           };
+
+        
 
         const auth = getAuth()
         onAuthStateChanged(auth, (user) => {
@@ -36,6 +47,7 @@ export function useAuthStatus() {
             
         })
     }, [])
-    
-  return { loggedIn, checkingStatus, isAdmin }
+
+    // console.log("Account Type: ", loggedIn, checkingStatus, isAdmin, isDoctor)
+  return { loggedIn, checkingStatus, isAdmin, isDoctor }
 }

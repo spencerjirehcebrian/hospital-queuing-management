@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { collection, onSnapshot, query, where, orderBy, getDocs, getDoc, doc, updateDoc } from 'firebase/firestore';
+import { collection, onSnapshot, query, where, orderBy, getDocs, getDoc, doc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from "../firebase/firebase";
 import { useNavigate } from "react-router-dom";
 import Spinner from "../components/Spinner";
@@ -113,7 +113,8 @@ function AppointmentList({closeCheckInListModal}) {
     const documentRef = doc(db, collectionName, documentId);
     const updateData = {
       [fieldToUpdate]: updatedValue,
-      waitingQueueNumber: highestValue + 1
+      waitingQueueNumber: highestValue + 1,
+      timeCheckIn: serverTimestamp()
     };
 
     updateDoc(documentRef, updateData)

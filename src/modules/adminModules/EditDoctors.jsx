@@ -17,7 +17,7 @@ import { doc, serverTimestamp, setDoc, getDoc } from "firebase/firestore";
 import { toast } from "react-toastify";
 
 
-export default function EditPatient() {
+export default function EditDoctor() {
     const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({
         name: "",
@@ -37,7 +37,7 @@ export default function EditPatient() {
         setLoading(true);
 
         async function fetchListing() {
-          const docRef = doc(db, "users", params.patientID);
+          const docRef = doc(db, "users", params.doctorID);
           const docSnap = await getDoc(docRef);
           if (docSnap.exists()) {
             setFormData({...docSnap.data()});
@@ -48,7 +48,7 @@ export default function EditPatient() {
           }
         }
         fetchListing();
-      }, [navigate, params.patientID    ]);
+      }, [navigate, params.doctorID]);
 
     function onChange(e) {
       setFormData((prevState) => ({
@@ -71,13 +71,14 @@ export default function EditPatient() {
         delete formDataCopy.password
         
         formDataCopy.isAdmin = false;
-        formDataCopy.isPatient = true;
+        formDataCopy.isPatient = false;
+        formDataCopy.isDoctor = false;
 
         await setDoc(doc(db, "users", params.patientID), formDataCopy);
         setLoading(false)
         toast.success("Successfully Saved Changes")
 
-        navigate("/patients")
+        navigate("/doctors")
 
     } catch (error) {
         console.log(error);
@@ -95,7 +96,7 @@ export default function EditPatient() {
   return (
 <section>
 
-  <h1 className='text-3xl text-center mt-6 font-bold'>Edit Patient Information</h1>
+  <h1 className='text-3xl text-center mt-6 font-bold'>Edit Doctor Information</h1>
   <div className='flex justify-center flex-wrap items-center px-6 py-12 max-w-6xl mx-auto'>
     
     <div className="w-full md:w-[40%] lg:w-[50%]">
@@ -105,7 +106,7 @@ export default function EditPatient() {
         id="name"
         value={name} 
         onChange={onChange}
-        placeholder='Full Name'/>
+        placeholder='Doctor Name'/>
 
       <input className="w-full mb-6 px-4 py-2 text-lg text-gray-700 bg-white border-gray-300 rounded transition ease-in-out" 
         type={startDOB ? "date" : "text"} 

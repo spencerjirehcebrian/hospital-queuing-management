@@ -2,7 +2,7 @@ import {useEffect, useState} from 'react'
 import { toast } from "react-toastify";
 
 import { getAuth } from "firebase/auth";
-import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+import { addDoc, collection, serverTimestamp, query, onSnapshot } from "firebase/firestore";
 import { db } from "../../firebase/firebase";
 import { useNavigate } from "react-router-dom";
 import TimePicker from 'react-time-picker';
@@ -17,6 +17,8 @@ export default function CreateSchedules() {
     const [startTime, setStartTime] = useState('10:00');
     const [endTime, setEndTime] = useState('11:00');
 
+    const [assetL, setAssetL] = useState([]);
+
     const [isMonday, setIsMonday] = useState(false)
     const [isTuesday, setIsTuesday] = useState(false)
     const [isWednesday, setIsWednesday] = useState(false)
@@ -25,15 +27,31 @@ export default function CreateSchedules() {
     const [isSaturday, setIsSaturday] = useState(false)
     const [isSunday, setIsSunday] = useState(false)
 
+    useEffect(() => {
 
+      const q = query(collection(db, 'departments'))
+
+      const unsubscribe = onSnapshot(q, (snapshot) => {
+        const departmentData = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+       setAssetL(departmentData);
+
+      });
+      return unsubscribe;
+      
+    }, []);
     const [formData, setFormData] = useState({
         name: "",
-        doctorName: ""
+        doctorName: "",
+        departmentName: ""
       });
 
     const {
         name,
-        doctorName
+        doctorName,
+        departmentName
     } = formData;
 
     function onChange(e) {
@@ -109,6 +127,23 @@ export default function CreateSchedules() {
           className="w-full px-4 py-2 text-lg text-gray-700 bg-white border border-gray-300 
           rounded transition duration-150 ease-in-out focus:text-gray-700 focus:bg-white focus:border-slate-600 mb-6"
         />
+
+      <select
+        id="departmentName"
+        value={departmentName}
+        required
+        onChange={onChange}
+        className={`w-full mb-6 px-4 py-2 text-lg text-gray-500 bg-white border-gray-300 rounded transition ease-in-out
+         ${departmentName|| "text-gray-700"}`}
+      >
+        <option className=" text-gray-400" value="" disabled selected hidden>--Select Hospital Department--</option>
+        {assetL.map((department) => (
+        <>
+        <option key={department.id} className=" text-gray-700" value={department.departmentName}>{department.departmentName}</option>
+        </> 
+        ))}
+      </select>
+
         
       <div className="mb-6">
         <p htmlFor="time" className="text-lg font-semibold">
@@ -142,7 +177,7 @@ export default function CreateSchedules() {
         />
       </div>
 
-      <div className="flex flex-col mb-6">
+    <div className="flex flex-col mb-6">
       <p htmlFor="time" className="text-lg font-semibold">
         Schedule Days Availiable
         </p>

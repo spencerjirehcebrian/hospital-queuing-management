@@ -33,10 +33,11 @@ export default function Profile() {
         dob: '',
         sex: '',
         isAdmin: false,
-        isPatient: false
+        isPatient: false,
+        isDoctor: false
     })
 
-    const { name, email, dob, sex, isAdmin, isPatient } = formData;
+    const { name, email, dob, sex, isAdmin, isPatient, isDoctor } = formData;
 
     useEffect(() => {
       setLoading(true);
@@ -104,6 +105,10 @@ export default function Profile() {
 
         {isAdmin && (<h3 className='text-1xl text-center mt-3 font-semibold'>
         Account Type: Admin 
+        </h3>)}
+
+        {isDoctor && (<h3 className='text-1xl text-center mt-3 font-semibold'>
+        Account Type: Doctor 
         </h3>)}
 
         <div className="w-full md:w-[50%] mt-6 px-3" >

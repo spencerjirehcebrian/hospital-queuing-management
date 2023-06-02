@@ -2,7 +2,7 @@ import React from 'react'
 import { Outlet, Navigate } from "react-router-dom"
 
 import { useAuthStatus } from '../hooks/useAuthStatus';
-import useAuthAdminStatus from "../hooks/useAuthAdminStatus"
+
 import Spinner from './Spinner';
 
 export default function AdminRoute() {

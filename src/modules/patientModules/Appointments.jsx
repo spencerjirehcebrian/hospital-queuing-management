@@ -17,7 +17,7 @@ export default function Appointments() {
           >Create an Appointment</button> */}
 {/* 
           <button className='mb-6 w-full bg-green-700 text-white px-7 py-3 text-sm font-medium uppercase rounded shadow-md 
-          hover:bg-green-800 transition duration-150 ease-in-out hover:shadow-lg active:bg-green-900'
+          hover:bg-green-799 transition duration-150 ease-in-out hover:shadow-lg active:bg-green-900'
           onClick={()=>navigate("/edit-schedule")}
           >Edit Schedule</button>     */}
       </div>

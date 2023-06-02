@@ -74,9 +74,10 @@ function QueueList() {
           <div key={queue.id} 
           className="bg-white p-4 rounded-lg shadow cursor-pointer"
           onClick={()=>navigate(`/edit-queue/${queue.id}`)}>
-            <h2 className="text-xl font-semibold">{queue.queueNumber}</h2>
+            <h2 className="text-xl font-semibold">Appointment Number: {queue.queueNumber}</h2>
             <p><span className="font-semibold">Patient Name: </span> {queue.patientName}</p>
             <p><span className="font-semibold">Attending Doctor: </span> {queue.doctorName}</p>
+            <p><span className="font-semibold">Department: </span> {queue.departmentName}</p>
             <p><span className="font-semibold">From: </span> {queue.scheduleStartTime} to {queue.scheduleEndTime}</p>
             <p><span className="font-semibold">Scheduled Date: </span> {queue.queueDate}</p>
             <p><span className="font-semibold">Status: </span> {queue.queueStatus}</p>

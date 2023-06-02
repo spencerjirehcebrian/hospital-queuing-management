@@ -39,6 +39,7 @@ export default function EditQueue() {
         queueDescription: "",
         scheduleID: "",
         doctorName: "",
+        departmentName: "",
         scheduleStartTime: "",
         scheduleEndTime: "",
         queueStatus: ""
@@ -53,6 +54,7 @@ export default function EditQueue() {
         queueDescription,
         scheduleID,
         doctorName,
+        departmentName,
         scheduleStartTime,
         scheduleEndTime,
         queueStatus
@@ -90,21 +92,12 @@ export default function EditQueue() {
             getDocs(q).then((querySnapshot) => {
             if (!querySnapshot.empty) {
               const doc = querySnapshot.docs[0].data();
-              //setResult(`Found document with ID ${scheduleID}. Field1: ${doc.startTime}, Field2: ${doc.endTime}`);
-
-              
-            //   setFormData({
-            //     ...formData,
-            //     scheduleStartTime: doc.startTime,
-            //     scheduleEndTime: doc.endTime,
-            //     doctorName: doc.doctorName
-            // })
-
-            const newData = {
+              const newData = {
               ...formData,
                 scheduleStartTime: doc.startTime,
                 scheduleEndTime: doc.endTime,
-                doctorName: doc.doctorName
+                doctorName: doc.doctorName,
+                departmentName: doc.departmentName
             };
             setFormData(newData);
 
@@ -115,7 +108,8 @@ export default function EditQueue() {
                 ...formData,
                 scheduleStartTime: "",
                 scheduleEndTime: "",
-                doctorName: ""
+                doctorName: "",
+                departmentName: "",
                 }
               setFormData(newData);
             }
@@ -372,6 +366,19 @@ export default function EditQueue() {
           rounded transition duration-150 ease-in-out focus:text-gray-700 focus:bg-white focus:border-slate-600 mb-6"
         />
 
+        <p className="text-lg font-semibold">Department Name</p>
+        <input
+          type="text"
+          id="departmentName"
+          value={departmentName}
+          onChange={onChange}
+          placeholder="Department Name"
+          maxLength="32"
+          required
+          disabled
+          className="w-full px-4 py-2 text-lg text-gray-700 bg-white border border-gray-300 
+          rounded transition duration-150 ease-in-out focus:text-gray-700 focus:bg-white focus:border-slate-600 mb-6"
+        />
         <p className="text-lg font-semibold">Schedule Start Time</p>
         <TimePicker
           id="scheduleStartTime"

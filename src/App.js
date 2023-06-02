@@ -8,6 +8,7 @@ import Header from './components/Header';
 
 import PrivateRoute from './components/PrivateRoute';
 import AdminRoute from './components/AdminRoute';
+import DoctorRoute from './components/DoctorRoute';
 
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -28,7 +29,6 @@ import Doctors from './modules/adminModules/Doctors';
 import CreateDoctors from './modules/adminModules/CreateDoctors';
 import EditDoctors from './modules/adminModules/EditDoctors';
 
-
 import Queue from './modules/adminModules/Queue';
 import CreateQueue from './modules/adminModules/CreateQueue';
 import EditQueue from './modules/adminModules/EditQueue';
@@ -45,6 +45,14 @@ import SelectCheckIn from './modules/patientModules/SelectCheckIn';
 import ConfirmCheckIn from './modules/patientModules/ConfirmCheckIn.jsx';
 
 import WaitingQueue from './modules/adminModules/WaitingQueue';
+
+import DoctorSchedule from './modules/doctorModules/DoctorSchedule';
+import CreateDoctorSchedule from './modules/doctorModules/CreateDoctorSchedule';
+import EditDoctorSchedule from './modules/doctorModules/EditDoctorSchedule';
+
+import DoctorAppointment from './modules/doctorModules/DoctorAppointments';
+
+import Report from './modules/adminModules/Report';
 
 import { Helmet } from 'react-helmet';
 
@@ -83,6 +91,13 @@ function App() {
           <Route path="/check-in-select" element={<PrivateRoute />}><Route path="/check-in-select"  element={<SelectCheckIn/>}/></Route>
           <Route path="/check-in-confirm/:appointmentID" element={<PrivateRoute />}><Route path="/check-in-confirm/:appointmentID" element={<ConfirmCheckIn/>}/></Route>
 
+          {/* Doctor */}
+          <Route path="/doctor-schedule" element={<DoctorRoute />}><Route path="/doctor-schedule" element={<DoctorSchedule/>}/></Route>
+          <Route path="/create-doctor-schedule" element={<DoctorRoute />}><Route path="/create-doctor-schedule" element={<CreateDoctorSchedule/>}/></Route>
+          <Route path="/edit-doctor-schedule/:doctorscheduleID" element={<DoctorRoute />}><Route path="/edit-doctor-schedule/:doctorscheduleID" element={<EditDoctorSchedule/>}/></Route>
+
+          <Route path="/doctor-appointments" element={<DoctorRoute />}><Route path="/doctor-appointments" element={<DoctorAppointment/>}/></Route>
+          
           {/* Admin */}
           <Route path="/schedules" element={<AdminRoute />}><Route path="/schedules" element={<Schedules/>}/></Route>
           <Route path="/create-schedule" element={<AdminRoute />}><Route path="/create-schedule" element={<CreateSchedules/>}/></Route>
@@ -105,8 +120,10 @@ function App() {
           <Route path="/edit-queue/:queueID" element={<AdminRoute />}><Route path="/edit-queue/:queueID" element={<EditQueue/>}/></Route>
 
           <Route path="/doctors" element={<AdminRoute />}><Route path="/doctors" element={<Doctors/>}/></Route>
-          <Route path="/create-doctors" element={<AdminRoute />}><Route path="/create-doctors" element={<CreateDoctors/>}/></Route>
-          <Route path="/edit-doctors/:doctorID" element={<AdminRoute />}><Route path="/edit-doctors/:doctorID" element={<EditDoctors/>}/></Route>
+          <Route path="/create-doctor" element={<AdminRoute />}><Route path="/create-doctor" element={<CreateDoctors/>}/></Route>
+          <Route path="/edit-doctor/:doctorID" element={<AdminRoute />}><Route path="/edit-doctor/:doctorID" element={<EditDoctors/>}/></Route>
+
+          <Route path="/report" element={<AdminRoute />}><Route path="/report" element={<Report/>}/></Route>
 
 
     

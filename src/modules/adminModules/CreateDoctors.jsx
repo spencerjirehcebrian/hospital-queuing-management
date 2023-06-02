@@ -63,7 +63,8 @@ export default function CreatePatient() {
         
         formDataCopy.timestamp = serverTimestamp();
         formDataCopy.isAdmin = false;
-        formDataCopy.isPatient = true;
+        formDataCopy.isPatient = false;
+        formDataCopy.isDoctor = true;
 
         await setDoc(doc(db, "users", id.uid), formDataCopy);
         setLoading(false)
@@ -87,7 +88,7 @@ export default function CreatePatient() {
   return (
 <section>
 
-  <h1 className='text-3xl text-center mt-6 font-bold'>Register a Patient</h1>
+  <h1 className='text-3xl text-center mt-6 font-bold'>Register a Doctor</h1>
   <div className='flex justify-center flex-wrap items-center px-6 py-12 max-w-6xl mx-auto'>
     
     <div className="w-full md:w-[40%] lg:w-[50%]">
@@ -148,7 +149,7 @@ export default function CreatePatient() {
 
       <button className='w-full bg-amber-700 text-white px-7 py-3 text-sm font-medium uppercase rounded shadow-md 
       hover:bg-amber-800 transition duration-150 ease-in-out hover:shadow-lg active:bg-amber-900'
-      type='submit'>Register then Sign In as Patient</button>
+      type='submit'>Register then Sign In as the Doctor</button>
       </form>
     </div>
   </div>
