@@ -6,27 +6,31 @@ import Spinner from "../components/Spinner";
 
 import { getAuth } from "firebase/auth";
 
-export const UpdateAverageWaitTime = (department, startDate, stopDate) => {
+const GetAverageWaitTimeDepartment = (department, startDate, stopDate) => {
 
-    const [timeArray, setTimeArray] = useState([])
-    const [average, setAverage] = useState(0)
+    console.log(department, startDate, stopDate)
 
-    const collectionName = "reports";
-    const documentId = 'FHVCfutBv2S4lf68PHSN'; 
-
-    const documentRef = doc(db, collectionName, documentId);
-
-    var averages = []
 
     useEffect(() => {
-        async function calculateTimeDifference() {
-        
+        const calculateTimeDifference = async () => {
+            const collectionName = "reports";
+            const documentId = 'FHVCfutBv2S4lf68PHSN'; 
+
+            const documentRef = doc(db, collectionName, documentId);
+
+            var averages = []
+
+            const startDate1 = new Date(startDate);
+            startDate1.setHours(0, 0, 0, 0);
+            const stopDate1 = new Date(stopDate);
+            stopDate1.setHours(23, 59, 59, 999);
+
             const q = query(
                 collection(db, 'queue'),
                 orderBy('timeCompleted'),
                 where('departmentName', "==", department),
-                where('timeCompleted', '>=', startDate),
-                where('timeCompleted', '<=', stopDate)
+                where('timeCompleted', '>=', startDate1),
+                where('timeCompleted', '<=', stopDate1)
                 );
         
                 const snapshot = await getDocs(q);
@@ -36,18 +40,9 @@ export const UpdateAverageWaitTime = (department, startDate, stopDate) => {
                     const timeCompleted = doc.data().timeCompleted.toDate();
                     
                     const difference =  timeCompleted.getTime() - timeCheckIn.getTime();
-                    //console.log(`Time difference for document ${doc.id}: ${difference} milliseconds`);
-
-                    //setTimeArray(prevTimeArray => [...prevTimeArray, difference]);
                     averages.push(difference)
-                    //console.log(averages)
                     const averageCalculated = averages.reduce((total, num) => total + num, 0) / averages.length;
-                    // console.log(averageCalculated)
                     const minutes = Math.ceil(averageCalculated / 60000);
-                    //const minutesWithDecimals = minutes.toFixed(2);
-                    setAverage(parseFloat(minutes))
-                    //console.log(minutes)
-                    //console.log(parseFloat(minutesWithDecimals))
 
                     const updateData = {
                         department: parseFloat(minutes),
@@ -63,14 +58,12 @@ export const UpdateAverageWaitTime = (department, startDate, stopDate) => {
 
                 });
 
-                setTimeArray([])
         }
         calculateTimeDifference()
         
-    }, []); 
+    }, [department, startDate, stopDate]); 
     
-    
-
-    return average;
+    return null;
 }
 
+export default GetAverageWaitTimeDepartment;

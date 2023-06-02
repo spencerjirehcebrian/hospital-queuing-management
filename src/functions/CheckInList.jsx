@@ -131,6 +131,22 @@ function AppointmentList({closeCheckInListModal}) {
         .catch((error) => {
           console.error("Error updating document:", error);
         });
+
+        const documentRef1 = doc(db, "users", auth.currentUser.uid);
+        const updateData1 = {
+          isCheckedIn: true,
+          appointmentID: documentId,
+          appointmentQueueNumber: highestValue + 1
+        };
+
+        updateDoc(documentRef1, updateData1)
+          .then(() => {
+            closeCheckInListModal()
+          })
+          .catch((error) => {
+            console.error("Error updating document:", error);
+          });
+
       }
       else {
         const updateData = {
@@ -146,23 +162,26 @@ function AppointmentList({closeCheckInListModal}) {
         .catch((error) => {
           console.error("Error updating document:", error);
         });
+
+        const documentRef1 = doc(db, "users", auth.currentUser.uid);
+        const updateData1 = {
+          isCheckedIn: true,
+          appointmentID: documentId,
+          appointmentQueueNumber: backupValue
+        };
+
+        updateDoc(documentRef1, updateData1)
+          .then(() => {
+            closeCheckInListModal()
+          })
+          .catch((error) => {
+            console.error("Error updating document:", error);
+          });
       }
 
 
 
-      const documentRef1 = doc(db, "users", auth.currentUser.uid);
-      const updateData1 = {
-        isCheckedIn: true,
-        appointmentID: documentId
-      };
-
-      updateDoc(documentRef1, updateData1)
-        .then(() => {
-          closeCheckInListModal()
-        })
-        .catch((error) => {
-          console.error("Error updating document:", error);
-        });
+      
 
 
     };

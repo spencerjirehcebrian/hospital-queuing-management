@@ -33,6 +33,7 @@ export default function CheckIn() {
     const [loading, setLoading] = useState(false);
     const [checkedIn, setCheckedIn] = useState(false);
     const [userAppointmentID, setUserAppointmentID] = useState("");
+    const [userAppointmentQueueNumber, setUserAppointmentQueueNumber] = useState("")
 
     const [isCheckInListOpen, setIsCheckInListOpen] = useState(false);
 
@@ -48,6 +49,7 @@ export default function CheckIn() {
         const data1 = docSnap.data();
         setCheckedIn(data1.isCheckedIn)
         setUserAppointmentID(data1.appointmentID)
+        setUserAppointmentQueueNumber(data1.appointmentQueueNumber)
 
         const docRef = doc(db, 'globalVariables', 'aplmxmAVlIdS8vAVFOut');
         const snapshot = await getDoc(docRef);
@@ -195,7 +197,7 @@ export default function CheckIn() {
       </div>)}
 
       {checkedIn &&(<div class="flex flex-grow space-x-5 mb-5 items-center">
-      <p className="m-auto">Estimated Wait Time until Your Appointment: <span className="font-semibold text-xl">{(queues.length * avg)}</span> minutes</p>
+      <p className="m-auto">Estimated Wait Time until Your Appointment: <span className="font-semibold text-xl">{((userAppointmentQueueNumber - value) * avg)}</span> minutes</p>
 
         </div>)}
 
