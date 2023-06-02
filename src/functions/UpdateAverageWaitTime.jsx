@@ -54,7 +54,7 @@ export const UpdateAverageWaitTime = () => {
                     
                     updateDoc(documentRef, updateData)
                     .then(() => {
-                        //console.log("Succes");
+                        //console.log("Success");
                     })
                     .catch((error) => {
                         console.error("Error updating document:", error);

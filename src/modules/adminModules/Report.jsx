@@ -10,7 +10,7 @@ export default function Report() {
      display the average wait time for each department in real-time, and allow administrators to filter by date range and time of day.
 
 
-     {/* <form onSubmit={onSubmit}>
+     <form onSubmit={onSubmit}>
         
       <div className="border border-gray-400 px-4 py-3 rounded-lg mb-5" >
         <p className="text-lg font-semibold">Appointment Date</p>
@@ -150,7 +150,7 @@ export default function Report() {
     >
       Add Apointment to Queue
     </button>
-      </form> */}
+      </form>
     </div>
   )
 }

@@ -70,9 +70,9 @@ export default function Header() {
                         ${pathMatchRoute("/billing") && "text-gray-900 border-b-green-500"}`}
                         onClick={()=> navigate("/billing")}>Billing</li>))}
  
-                    {/* {loggedIn && (isAdmin && (<li className={`py-3 text-sm text-center font-semibold text-gray-400 border-b-[5px] cursor-pointer border-transparent transition duration-300
+                    {loggedIn && (isAdmin && (<li className={`py-3 text-sm text-center font-semibold text-gray-400 border-b-[5px] cursor-pointer border-transparent transition duration-300
                         ${pathMatchRoute("/report") && "text-gray-900 border-b-green-500"}`}
-                        onClick={()=> navigate("/report")}>Reports</li>))}                    */}
+                        onClick={()=> navigate("/report")}>Reports</li>))}                   
                     
                     </>)}
                     

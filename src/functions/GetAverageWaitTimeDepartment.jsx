@@ -11,12 +11,10 @@ export const UpdateAverageWaitTime = (department, startDate, stopDate) => {
     const [timeArray, setTimeArray] = useState([])
     const [average, setAverage] = useState(0)
 
-    const collectionName = "globalVariables";
-    const documentId = 'aplmxmAVlIdS8vAVFOut'; 
-    const fieldToUpdate = "averageWaitTime";
+    const collectionName = "reports";
+    const documentId = 'FHVCfutBv2S4lf68PHSN'; 
 
     const documentRef = doc(db, collectionName, documentId);
-
 
     var averages = []
 
@@ -25,7 +23,10 @@ export const UpdateAverageWaitTime = (department, startDate, stopDate) => {
         
             const q = query(
                 collection(db, 'queue'),
-                orderBy('timeCompleted')
+                orderBy('timeCompleted'),
+                where('departmentName', "==", department),
+                where('timeCompleted', '>=', startDate),
+                where('timeCompleted', '<=', stopDate)
                 );
         
                 const snapshot = await getDocs(q);
@@ -49,7 +50,7 @@ export const UpdateAverageWaitTime = (department, startDate, stopDate) => {
                     //console.log(parseFloat(minutesWithDecimals))
 
                     const updateData = {
-                        [fieldToUpdate]: parseFloat(minutes),
+                        department: parseFloat(minutes),
                     };
                     
                     updateDoc(documentRef, updateData)
@@ -65,10 +66,7 @@ export const UpdateAverageWaitTime = (department, startDate, stopDate) => {
                 setTimeArray([])
         }
         calculateTimeDifference()
-
-
-
-
+        
     }, []); 
     
     
