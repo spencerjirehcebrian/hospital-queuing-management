@@ -17,7 +17,6 @@ export function useAuthStatus() {
 
     useEffect(() => {
         const fetchData = async (e) => {
-            console.log(e)
             const q = query(
             collection(db, "users"), where("email", "==", e), where("isAdmin", "==", true));
             const querySnapshot = await getDocs(q);

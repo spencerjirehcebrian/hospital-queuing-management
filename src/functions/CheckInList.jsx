@@ -17,9 +17,10 @@ function AppointmentList({closeCheckInListModal}) {
     const [searchTerm, setSearchTerm] = useState('');
     const [queryValues, setQueryValues] = useState([])
     const [highestValue, setHighestValue] = useState(0)
+    const [backupValue, setBackupValue] = useState(0)
 
     useEffect(() => {
-     
+
         if (searchTerm){
   
           const q = searchTerm
@@ -59,13 +60,21 @@ function AppointmentList({closeCheckInListModal}) {
           setQueues(booksData);
 
         getArrayOfField()
-            .then((fieldValues) => {
-                setQueryValues(fieldValues)
-                setHighestValue(Math.max(...fieldValues));
-            })
-            .catch((error) => {
-                console.error("Error retrieving field values:", error);
-            });
+          .then((fieldValues) => {
+              setQueryValues(fieldValues)
+              setHighestValue(Math.max(...fieldValues));
+          })
+          .catch((error) => {
+              console.error("Error retrieving field values:", error);
+          });
+
+        getCurrentQueueNumber()
+          .then((retrievedValue) => {
+            setBackupValue(retrievedValue + 1)
+          })
+          .catch((error) => {
+              console.error("Error retrieving field values:", error);
+          });
 
          
         });
@@ -96,53 +105,67 @@ function AppointmentList({closeCheckInListModal}) {
         const data = snapshot.data();
         const retrievedValue = data.currentQueueNumber;
         return retrievedValue;
-
     }
 
 
     const checkIn = (id) => {
 
-    if (queryValues.length == 0){
-        setHighestValue(getCurrentQueueNumber)
-    }
-    const collectionName = "queue";
-    const documentId = id; 
-    const fieldToUpdate = "queueStatus";
-    const updatedValue = "Checked In";
+      const collectionName = "queue";
+      const documentId = id; 
+      const fieldToUpdate = "queueStatus";
+      const updatedValue = "Checked In";
 
-    const documentRef = doc(db, collectionName, documentId);
-    const updateData = {
-      [fieldToUpdate]: updatedValue,
-      waitingQueueNumber: highestValue + 1,
-      timeCheckIn: serverTimestamp()
-    };
+      const documentRef = doc(db, collectionName, documentId);
 
-    updateDoc(documentRef, updateData)
-      .then(() => {
- 
-      })
-      .catch((error) => {
-        console.error("Error updating document:", error);
-      });
+      if (highestValue > 0){
+        const updateData = {
+          [fieldToUpdate]: updatedValue,
+          waitingQueueNumber: highestValue + 1,
+          timeCheckIn: serverTimestamp()
+        };
+
+        updateDoc(documentRef, updateData)
+        .then(() => {
+  
+        })
+        .catch((error) => {
+          console.error("Error updating document:", error);
+        });
+      }
+      else {
+        const updateData = {
+          [fieldToUpdate]: updatedValue,
+          waitingQueueNumber: backupValue,
+          timeCheckIn: serverTimestamp()
+        };
+
+        updateDoc(documentRef, updateData)
+        .then(() => {
+  
+        })
+        .catch((error) => {
+          console.error("Error updating document:", error);
+        });
+      }
 
 
 
-    const documentRef1 = doc(db, "users", auth.currentUser.uid);
-    const updateData1 = {
-      isCheckedIn: true,
-      appointmentID: documentId
-    };
-
-    updateDoc(documentRef1, updateData1)
-      .then(() => {
-        closeCheckInListModal()
-      })
-      .catch((error) => {
-        console.error("Error updating document:", error);
-      });
-
-
+      const documentRef1 = doc(db, "users", auth.currentUser.uid);
+      const updateData1 = {
+        isCheckedIn: true,
+        appointmentID: documentId
       };
+
+      updateDoc(documentRef1, updateData1)
+        .then(() => {
+          closeCheckInListModal()
+        })
+        .catch((error) => {
+          console.error("Error updating document:", error);
+        });
+
+
+    };
 
   if (loading) {
     return <Spinner />;

@@ -41,8 +41,6 @@ import ShowHistory from './modules/patientModules/ShowHistory';
 import ShowStatementOfAccount from './modules/patientModules/ShowStatementOfAccount';
 
 import CheckIn from './modules/patientModules/CheckIn';
-import SelectCheckIn from './modules/patientModules/SelectCheckIn';
-import ConfirmCheckIn from './modules/patientModules/ConfirmCheckIn.jsx';
 
 import WaitingQueue from './modules/adminModules/WaitingQueue';
 
@@ -88,9 +86,7 @@ function App() {
           <Route path="/show-statement-of-account/:billID" element={<PrivateRoute />}><Route path="/show-statement-of-account/:billID" element={<ShowStatementOfAccount/>}/></Route>
 
           <Route path="/check-in" element={<PrivateRoute />}><Route path="/check-in" element={<CheckIn/>}/></Route>
-          <Route path="/check-in-select" element={<PrivateRoute />}><Route path="/check-in-select"  element={<SelectCheckIn/>}/></Route>
-          <Route path="/check-in-confirm/:appointmentID" element={<PrivateRoute />}><Route path="/check-in-confirm/:appointmentID" element={<ConfirmCheckIn/>}/></Route>
-
+          
           {/* Doctor */}
           <Route path="/doctor-schedule" element={<DoctorRoute />}><Route path="/doctor-schedule" element={<DoctorSchedule/>}/></Route>
           <Route path="/create-doctor-schedule" element={<DoctorRoute />}><Route path="/create-doctor-schedule" element={<CreateDoctorSchedule/>}/></Route>

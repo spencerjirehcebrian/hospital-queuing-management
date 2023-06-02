@@ -9,7 +9,7 @@ import TimePicker from 'react-time-picker';
 import 'react-time-picker/dist/TimePicker.css';
 import 'react-clock/dist/Clock.css';
 
-export default function CreateSchedules() {
+export default function CreateDoctorSchedule() {
     const [loading, setLoading] = useState(false);
     const auth = getAuth()
     const navigate = useNavigate()

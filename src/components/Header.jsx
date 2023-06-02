@@ -80,11 +80,11 @@ export default function Header() {
                     {!isDoctor &&(<>
                     {loggedIn && (!isAdmin && (<li className={`py-3 text-sm text-center font-semibold text-gray-400 border-b-[5px] cursor-pointer border-transparent transition duration-300
                     ${pathMatchRoute("/check-in") && "text-gray-900 border-b-green-500"}`}
-                    onClick={()=> navigate("/check-in")}>Queue and Check In</li>))}
+                    onClick={()=> navigate("/check-in")}>Check In</li>))}
 
                     {loggedIn && (!isAdmin && (<li className={`py-3 text-sm text-center font-semibold text-gray-400 border-b-[5px] cursor-pointer border-transparent transition duration-300
                         ${pathMatchRoute("/create-appointment") && "text-gray-900 border-b-green-500"}`}
-                        onClick={()=> navigate("/create-appointment")}>Schedule an Appointment</li>))}
+                        onClick={()=> navigate("/create-appointment")}>Schedule Appointment</li>))}
 
                     {loggedIn && (!isAdmin && (<li className={`py-3 text-sm text-center font-semibold text-gray-400 border-b-[5px] cursor-pointer border-transparent transition duration-300
                         ${pathMatchRoute("/appointments") && "text-gray-900 border-b-green-500"}`}
@@ -96,7 +96,7 @@ export default function Header() {
 
                     {loggedIn && (!isAdmin && (<li className={`py-3 text-sm text-center font-semibold text-gray-400 border-b-[5px] cursor-pointer border-transparent transition duration-300
                         ${pathMatchRoute("/statement-of-account") && "text-gray-900 border-b-green-500"}`}
-                        onClick={()=> navigate("/statement-of-account")}>Statement of Account</li>))}
+                        onClick={()=> navigate("/statement-of-account")}>Hospital Bills</li>))}
                     </>)}
 
                     {/* Doctor Header */}

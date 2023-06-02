@@ -16,6 +16,8 @@ import CheckInList from '../../functions/CheckInList';
 
 import { toast } from "react-toastify";
 
+import { UpdateAverageWaitTime } from '../../functions/UpdateAverageWaitTime.jsx';
+
 export default function CheckIn() {
 
 
@@ -34,6 +36,8 @@ export default function CheckIn() {
 
     const [isCheckInListOpen, setIsCheckInListOpen] = useState(false);
 
+    const avg = UpdateAverageWaitTime()
+
     useEffect(() => {
         setLoading(true)
         
@@ -50,7 +54,6 @@ export default function CheckIn() {
 
         const data = snapshot.data();
         const retrievedValue = data.currentQueueNumber;
-        console.log(retrievedValue)
         setValue(data.currentQueueNumber)
 
         const q = query(
@@ -153,7 +156,8 @@ export default function CheckIn() {
         
 
         <div class="flex flex-grow space-x-5 mb-5 items-center">
-            <p class="m-auto">Estimated Wait Time until Next Appointment: 10:00 mins</p>
+        <p className="m-auto">Estimated Wait Time until Next Appointment: <span className="font-semibold text-xl">{avg}</span> minutes</p>
+
         </div>
 
         {empty && (<div className="grid grid-cols-1 gap-4">
@@ -191,7 +195,8 @@ export default function CheckIn() {
       </div>)}
 
       {checkedIn &&(<div class="flex flex-grow space-x-5 mb-5 items-center">
-            <p class="m-auto">Estimated Wait Time until you are Served: 10:00 mins</p>
+      <p className="m-auto">Estimated Wait Time until Your Appointment: <span className="font-semibold text-xl">{(queues.length * avg)}</span> minutes</p>
+
         </div>)}
 
       {!checkedIn && (<div class="flex flex-grow space-x-5 mt-2">
