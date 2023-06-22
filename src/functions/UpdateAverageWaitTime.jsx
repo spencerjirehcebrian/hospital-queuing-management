@@ -66,13 +66,8 @@ export const UpdateAverageWaitTime = () => {
         }
         calculateTimeDifference()
 
-
-
-
     }, []); 
     
-    
-
     return average;
 }
 

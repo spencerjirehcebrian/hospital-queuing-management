@@ -276,7 +276,7 @@ export default function WaitingQueue() {
 
 </div>
     <div className="container mx-auto p-1">
-    <hr class="border border-gray-300 m-5"></hr>
+    <hr className="border border-gray-300 m-5"></hr>
     <h1 className="text-2xl text-center font-bold m-auto mb-3">Upcoming Appointments</h1>
     
         {!loading && (<WaitingQueueList queueNumber={value}/>)}
