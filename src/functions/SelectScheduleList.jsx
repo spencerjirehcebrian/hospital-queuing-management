@@ -56,6 +56,7 @@ function SelectScheduleList(props) {
 
     function handleClick(e) {
      props.getScheduleID(e);
+     props.closeScheduleModal();
     }
 
   if (loading) {
@@ -78,20 +79,15 @@ function SelectScheduleList(props) {
       </div>
 
       <div className="grid grid-cols-2 gap-4">
-        {schedules.map((schedule) => (
+      {schedules.map((schedule) => (
           <div key={schedule.id} 
           className="bg-white p-4 rounded-lg shadow cursor-pointer"
-          onClick={() => {
-            handleClick(schedule.id);
-            onClickHandler();
-          }}
-          
-          
-          >
+          onClick={()=>handleClick(schedule.id)}>
             <h2 className="text-xl font-semibold">{schedule.name}</h2>
             <p><span className="font-semibold">Doctor Name: </span> {schedule.doctorName}</p>
-            <p><span className="font-semibold">Department Name: </span> {schedule.departmentName}</p>
+            <p><span className="font-semibold">Department: </span> {schedule.departmentName}</p>
             <p><span className="font-semibold">Time Slot</span>: {schedule.startTime} - {schedule.endTime}</p>
+            <p><span className="font-semibold">Doctor Availiable: </span> {schedule.isAvailable ? "Yes" : "No"}</p>
             <span className="font-semibold">Days Availiable: </span> 
             <span className={schedule.isSunday ? "text-green-600 font-bold" : "text-gray-400 "}>Sun </span>
             <span className={schedule.isMonday ? "text-green-600 font-bold" : "text-gray-400 "} >Mon </span>

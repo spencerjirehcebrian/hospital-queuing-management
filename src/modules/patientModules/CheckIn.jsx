@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react'
 import { getAuth } from "firebase/auth";
 import { db } from "../../firebase/firebase";
-import { getFirestore, collection, onSnapshot, updateDoc, doc, getDoc, query, where, getDocs, FieldValue } from 'firebase/firestore';
+import { getFirestore, serverTimestamp, collection, onSnapshot, updateDoc, doc, getDoc, query, where, getDocs, FieldValue } from 'firebase/firestore';
 
 import { useNavigate } from "react-router-dom";
 import PublicWaitingQueueList from '../../functions/PublicWaitingQueueList.jsx';
@@ -37,6 +37,8 @@ export default function CheckIn() {
 
     const [isCheckInListOpen, setIsCheckInListOpen] = useState(false);
 
+    const [highestValue, setHighestValue] = useState(0)
+
     const avg = UpdateAverageWaitTime()
 
     useEffect(() => {
@@ -48,6 +50,25 @@ export default function CheckIn() {
         const docSnap = await getDoc(docRef1);
         const data1 = docSnap.data();
         setCheckedIn(data1.isCheckedIn)
+
+        const q3 = query(collection(db, 'queue'),
+         where('patientEmail', '==', auth.currentUser.email),
+         where('queueStatus', '==', "Checked In")
+         );
+
+         getDocs(q3)
+         .then((querySnapshot) => {
+           if (!querySnapshot.empty) {
+             setCheckedIn(true)
+           } else {
+             console.log('Query does not exist');
+           }
+         })
+         .catch((error) => {
+           console.error('Error checking query:', error);
+         });
+
+
         setUserAppointmentID(data1.appointmentID)
         setUserAppointmentQueueNumber(data1.appointmentQueueNumber)
 
@@ -83,15 +104,36 @@ export default function CheckIn() {
                 return unsubscribe;
             })
         }
-    
-  
       };
   
         fetchData()
       }, [isCheckInListOpen, checkedIn]);
 
+    async function getArrayOfField() {
+      const collectionName = "queue";
+      const fieldToRetrieve = "waitingQueueNumber"; 
+
+      const q = query(
+      collection(db, collectionName)
+      );
+      
+      const querySnapshot = await getDocs(q);
+  
+      const fieldValues = querySnapshot.docs.map((doc) => doc.data()[fieldToRetrieve]);
+      setLoading(false)
+      return fieldValues;
+    }
 
   async function setAsSet() {
+
+    getArrayOfField()
+        .then((fieldValues) => {
+            setHighestValue(Math.max(...fieldValues));
+        })
+        .catch((error) => {
+            console.error("Error retrieving field values:", error);
+        });
+
     const collectionName = "queue";
     const documentId = userAppointmentID; 
     const fieldToUpdate = "queueStatus";
@@ -99,7 +141,9 @@ export default function CheckIn() {
 
     const documentRef = doc(db, collectionName, documentId);
     const updateData = {
-      [fieldToUpdate]: updatedValue
+      [fieldToUpdate]: updatedValue,
+      waitingQueueNumber: highestValue + 1,
+      timeCheckIn: serverTimestamp(),
     };
 
     updateDoc(documentRef, updateData)
@@ -126,8 +170,6 @@ export default function CheckIn() {
         console.error("Error updating document:", error);
     });
     };
-
-
 
   function closeCheckInListModal() {
     setIsCheckInListOpen(false);
@@ -290,7 +332,7 @@ export default function CheckIn() {
               </Dialog.Title> 
               <div className="mt-2">
                 <p className="text-sm text-gray-500">
-                  The following are your appointments that have not been Completed or Checked-In
+                  The following are your appointments that are approved/set and ready for checking in. If your appointment is not listed please check with your hospital adminsitrator
                 </p>
                 {/* Insert your content here */}
                 {isCheckInListOpen && <CheckInList closeCheckInListModal={closeCheckInListModal}/>}

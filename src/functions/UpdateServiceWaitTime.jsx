@@ -6,14 +6,14 @@ import Spinner from "../components/Spinner";
 
 import { getAuth } from "firebase/auth";
 
-export const UpdateAverageWaitTime = () => {
+export const UpdateServiceWaitTime = () => {
 
-    const [timeArray, setTimeArray] = useState([])
+    const [timeArray, setTimeArray] = useState([ ])
     const [average, setAverage] = useState(0)
 
     const collectionName = "globalVariables";
     const documentId = 'aplmxmAVlIdS8vAVFOut'; 
-    const fieldToUpdate = "averageWaitTime";
+    const fieldToUpdate = "averageServiceTime";
 
     const documentRef = doc(db, collectionName, documentId);
 
@@ -25,16 +25,16 @@ export const UpdateAverageWaitTime = () => {
         
             const q = query(
                 collection(db, 'queue'),
-                orderBy('timeServiceStart')
+                orderBy('timeCompleted')
                 );
         
                 const snapshot = await getDocs(q);
             
                 snapshot.forEach(doc => {
-                    const timeCheckIn = doc.data().timeCheckIn.toDate();
                     const timeServiceStart = doc.data().timeServiceStart.toDate();
+                    const timeCompleted = doc.data().timeCompleted.toDate();
                     
-                    const difference =  timeServiceStart.getTime() - timeCheckIn.getTime();
+                    const difference =  timeCompleted.getTime() - timeServiceStart.getTime();
                     //console.log(`Time difference for document ${doc.id}: ${difference} milliseconds`);
 
                     //setTimeArray(prevTimeArray => [...prevTimeArray, difference]);

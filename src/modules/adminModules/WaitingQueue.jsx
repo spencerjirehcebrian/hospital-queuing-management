@@ -6,10 +6,19 @@ import { useNavigate } from "react-router-dom";
 import WaitingQueueList from '../../functions/WaitingQueueList.jsx';
 import { UpdateAverageWaitTime } from '../../functions/UpdateAverageWaitTime.jsx';
 import Spinner from '../../components/Spinner';
+import EditQueueModal from '../../modules/adminModules/EditQueueModal';
+
+import { Dialog, Transition } from '@headlessui/react';
+import { Fragment } from 'react';
+import { XIcon } from '@heroicons/react/outline';
+
+import { toast } from "react-toastify";
 
 export default function WaitingQueue() {
 
     const navigate = useNavigate()
+
+    const [modifyKey, setModifyKey] = useState('');
 
     const [queues, setQueues] = useState([]);
     const [empty, setEmpty] = useState(true);
@@ -17,7 +26,8 @@ export default function WaitingQueue() {
     const [value, setValue] = useState(0);
     const [loading, setLoading] = useState(false);
 
-    const avg = UpdateAverageWaitTime()
+    //const [avg, setAvg] = useState(UpdateAverageWaitTime())
+    var avg = UpdateAverageWaitTime()
 
     useEffect(() => {
       setLoading(true)
@@ -40,7 +50,7 @@ export default function WaitingQueue() {
 
         const q = query(
           collection(db, 'queue'),
-          where('queueStatus', "in", ["Checked In"]),
+          where('queueStatus', '==', 'Checked In'),
           where('waitingQueueNumber', '==', value)
         );
         
@@ -107,61 +117,65 @@ export default function WaitingQueue() {
 
  
   async function updateQueueNumberDecrement() {
+    setLoading(true)
     const docRef = doc(db, 'globalVariables', 'aplmxmAVlIdS8vAVFOut');
     
-    setValue(value -1 )
+    setValue(value -1)
 
     updateDoc(docRef, {
       currentQueueNumber: value - 1
     })
     .then(() => {
-     
+      setLoading(false)
     })
     .catch((error) => {
+      setLoading(false)
       console.log('Error updating number:', error);
     });
 
   }
 
   async function updateQueueNumberIncrement() {
-    const docRef = doc(db, 'globalVariables', 'aplmxmAVlIdS8vAVFOut');
-  
-    setValue(value + 1)
+    setLoading(true)
+      const docRef = doc(db, 'globalVariables', 'aplmxmAVlIdS8vAVFOut');
+    
+      setValue(value + 1)
 
-    updateDoc(docRef, {
-      currentQueueNumber: value + 1
-    })
-    .then(() => {
-
+      updateDoc(docRef, {
+        currentQueueNumber: value + 1
       })
-    .catch((error) => {
-      console.log('Error updating number:', error);
-    });
+      .then(() => {
+        
+        setLoading(false)
+        })
+      .catch((error) => {
+        setLoading(false)
+        console.log('Error updating number:', error);
+      });
     }
 
 
-  async function setAsCompleted(id) {
+  async function setAsInService(id) {
     const collectionName = "queue";
     const documentId = id; 
     const fieldToUpdate = "queueStatus";
-    const updatedValue = "Completed";
+    const updatedValue = "In Service";
 
     const documentRef = doc(db, collectionName, documentId);
     const updateData = {
       [fieldToUpdate]: updatedValue,
-      timeCompleted: serverTimestamp()
+      timeServiceStart: serverTimestamp()
     };
 
     updateDoc(documentRef, updateData)
       .then(() => {
-        
+        toast.success("Status set to In Service and moved to In Service Queue");
       })
       .catch((error) => {
-        console.error("Error updating document:", error);
+        toast.error("Error updating document:", error);
       });
 
       updateQueueNumberIncrement()
-      updateQueueNumberDecrement()
 
   };
 
@@ -178,15 +192,27 @@ export default function WaitingQueue() {
 
     updateDoc(documentRef, updateData)
       .then(() => {
-        
+        toast.success("Status set to Missed and removed Waiting Queue");
       })
       .catch((error) => {
-        console.error("Error updating document:", error);
+        toast.error("Error updating document:", error);
       });
 
       updateQueueNumberIncrement()
-      updateQueueNumberDecrement()
+
   };
+
+  const [isModifyOpen, setIsModifyOpen] = useState(false);
+
+  function closeModifyModal() {
+      setIsModifyOpen(false);
+  }
+
+  function openModifyModal(id) {
+      setIsModifyOpen(true);
+      setModifyKey(id)
+  }
+
    
   if (loading) {
     return <Spinner />;
@@ -219,13 +245,13 @@ export default function WaitingQueue() {
         <div className="flex flex-grow space-x-5 mt-2 ">
 
 
-          <button className='mb-6 w-full bg-amber-700 text-white px-7 py-3 text-sm font-medium uppercase rounded shadow-md 
-            hover:bg-amber-800 transition duration-150 ease-in-out hover:shadow-lg active:bg-amber-900'
+          <button className='mb-6 w-full bg-amber-700 text-white px-7 py-3 text-sm font-medium uppercase rounded shadow-md '
+          disabled
           >Set Apointment as Missed</button>
 
-<button className='mb-6 w-full bg-green-700 text-white px-7 py-3 text-sm font-medium uppercase rounded shadow-md 
-          hover:bg-green-800 transition duration-150 ease-in-out hover:shadow-lg active:bg-green-900'
-          >Set Apointment as Completed</button>
+        <button className='mb-6 w-full bg-green-700 text-white px-7 py-3 text-sm font-medium uppercase rounded shadow-md '
+          disabled
+          >Move to In Service Queue</button>
           </div>
           </div>
       
@@ -236,7 +262,7 @@ export default function WaitingQueue() {
           <div>
           <div key={queue.id} 
           className="bg-white p-4 rounded-lg shadow cursor-pointer"
-          onClick={()=>navigate(`/edit-queue/${queue.id}`)}>
+          onClick={()=>openModifyModal(queue.id)}>
             <p><span className="font-semibold">Patient Name: </span> {queue.patientName}</p>
             <p><span className="font-semibold">Attending Doctor: </span> {queue.doctorName}</p>
             <p><span className="font-semibold">Department: </span> {queue.departmentName}</p>
@@ -253,8 +279,8 @@ export default function WaitingQueue() {
 
         <button className='mb-6 w-full bg-green-700 text-white px-7 py-3 text-sm font-medium uppercase rounded shadow-md 
           hover:bg-green-800 transition duration-150 ease-in-out hover:shadow-lg active:bg-green-900'
-          onClick={() => setAsCompleted(queue.id)}
-          >Set Apointment as Completed</button>
+          onClick={() => setAsInService(queue.id)}
+          >Move to In Service Queue</button>
           
           </div>
           </div>
@@ -281,6 +307,66 @@ export default function WaitingQueue() {
     
         {!loading && (<WaitingQueueList queueNumber={value}/>)}
       </div>
+
+      <Transition appear show={isModifyOpen} as={Fragment}>
+      <Dialog
+        as="div"
+        className="fixed inset-0 z-10 overflow-y-auto"
+        onClose={closeModifyModal}
+      >
+        <div className="min-h-screen px-4 text-center">
+          <Transition.Child
+            as={Fragment}
+            enter="ease-out duration-300"
+            enterFrom="opacity-0"
+            enterTo="opacity-100"
+            leave="ease-in duration-200"
+            leaveFrom="opacity-100"
+            leaveTo="opacity-0"
+          >
+            <Dialog.Overlay className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
+          </Transition.Child>
+
+          <span
+            className="inline-block h-screen align-middle"
+            aria-hidden="true"
+          >
+            &#8203;
+          </span>
+
+          <Transition.Child
+            as={Fragment}
+            enter="ease-out duration-300"
+            enterFrom="opacity-0 scale-95"
+            enterTo="opacity-100 scale-100"
+            leave="ease-in duration-200"
+            leaveFrom="opacity-100 scale-100"
+            leaveTo="opacity-0 scale-95"
+          >
+            <div className="inline-block w-full max-w-7xl p-6 my-8 overflow-hidden text-left align-middle transition-all transform bg-white shadow-xl rounded-2xl">
+              <div className="absolute top-0 right-0 pt-4 pr-4">
+                <button
+                  type="button"
+                  className="text-gray-400 hover:text-gray-500 focus:outline-none focus:text-gray-500 transition ease-in-out duration-150"
+                  onClick={closeModifyModal}
+                >
+                  <span className="sr-only">Close</span>
+                  <XIcon className="h-6 w-6" aria-hidden="true" />
+                </button>
+              </div>
+              <Dialog.Title
+                as="h3"
+                className="text-lg font-medium leading-6 text-gray-900"
+              >
+                Modify Appointment
+              </Dialog.Title> 
+
+              <EditQueueModal id={modifyKey} closeModifyModal={closeModifyModal}/>
+            </div>
+          </Transition.Child>
+        </div>
+      </Dialog>
+    </Transition>
     </>
   )
 }

@@ -70,19 +70,6 @@ function AppointmentList() {
   }
   return (
     <div className="container mx-auto p-4">
-      {/* <div className="mb-4">
-        <label htmlFor="search" className="sr-only">
-          Search
-        </label>
-        <input
-          type="text"
-          id="search"
-          className="w-full px-4 py-2 rounded-lg shadow"
-          placeholder="Search by queue number"
-          value={searchTerm}
-          onChange={handleSearch}
-        />
-      </div> */}
 
       <div className="grid grid-cols-1 gap-4">
         {queues.map((queue) => (

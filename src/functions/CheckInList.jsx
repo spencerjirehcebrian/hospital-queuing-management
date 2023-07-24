@@ -88,7 +88,6 @@ function AppointmentList({closeCheckInListModal}) {
 
         const q = query(
         collection(db, collectionName),
-        where('queueStatus', "in", ["Checked In"])
         );
         
         const querySnapshot = await getDocs(q);
@@ -109,6 +108,22 @@ function AppointmentList({closeCheckInListModal}) {
 
 
     const checkIn = (id) => {
+      setLoading(true)
+      
+      const fieldValues = []
+
+        const q = query(
+          collection(db, "queue")
+          );  
+
+      getDocs(q)
+        .then((querySnapshot) => {
+          querySnapshot.docs.forEach((doc) => {
+            fieldValues.push(doc.data().waitingQueueNumber);
+          });
+          const integersOnly = fieldValues.filter((value) => Number.isInteger(value));
+
+          const maxQueueingNumber = (Math.max(...integersOnly)) + 1
 
       const collectionName = "queue";
       const documentId = id; 
@@ -116,74 +131,45 @@ function AppointmentList({closeCheckInListModal}) {
       const updatedValue = "Checked In";
 
       const documentRef = doc(db, collectionName, documentId);
-
-      if (highestValue > 0){
-        const updateData = {
-          [fieldToUpdate]: updatedValue,
-          waitingQueueNumber: highestValue + 1,
-          timeCheckIn: serverTimestamp()
-        };
-
-        updateDoc(documentRef, updateData)
-        .then(() => {
-  
-        })
-        .catch((error) => {
-          console.error("Error updating document:", error);
-        });
-
-        const documentRef1 = doc(db, "users", auth.currentUser.uid);
-        const updateData1 = {
-          isCheckedIn: true,
-          appointmentID: documentId,
-          appointmentQueueNumber: highestValue + 1
-        };
-
-        updateDoc(documentRef1, updateData1)
-          .then(() => {
-            closeCheckInListModal()
-          })
-          .catch((error) => {
-            console.error("Error updating document:", error);
-          });
-
-      }
-      else {
-        const updateData = {
-          [fieldToUpdate]: updatedValue,
-          waitingQueueNumber: backupValue,
-          timeCheckIn: serverTimestamp()
-        };
-
-        updateDoc(documentRef, updateData)
-        .then(() => {
-  
-        })
-        .catch((error) => {
-          console.error("Error updating document:", error);
-        });
-
-        const documentRef1 = doc(db, "users", auth.currentUser.uid);
-        const updateData1 = {
-          isCheckedIn: true,
-          appointmentID: documentId,
-          appointmentQueueNumber: backupValue
-        };
-
-        updateDoc(documentRef1, updateData1)
-          .then(() => {
-            closeCheckInListModal()
-          })
-          .catch((error) => {
-            console.error("Error updating document:", error);
-          });
-      }
-
-
-
       
+        const updateData = {
+          [fieldToUpdate]: updatedValue,
+          waitingQueueNumber:maxQueueingNumber,
+          timeCheckIn: serverTimestamp()
+        };
 
+        updateDoc(documentRef, updateData)
+        .then(() => {
+          setLoading(false)
+  
+        })
+        .catch((error) => {
+          console.error("Error updating document:", error);
+          setLoading(false)
+        });
 
+        const documentRef1 = doc(db, "users", auth.currentUser.uid);
+        const updateData1 = {
+          isCheckedIn: true,
+          appointmentID: documentId,
+          appointmentQueueNumber: maxQueueingNumber
+        };
+
+        updateDoc(documentRef1, updateData1)
+          .then(() => {
+            closeCheckInListModal()
+            setLoading(false)
+          })
+          .catch((error) => {
+            console.error("Error updating document:", error);
+            setLoading(false)
+          });
+          
+        })
+        .catch((error) => {
+          console.error("Error getting documents:", error);
+          setLoading(false)
+        });
     };
 
   if (loading) {
@@ -203,7 +189,6 @@ function AppointmentList({closeCheckInListModal}) {
             <p><span className="font-semibold">Scheduled Date: </span> {queue.queueDate}</p>
             <p><span className="font-semibold">Status: </span> {queue.queueStatus}</p>
             <p><span className="font-semibold">Description: </span> {queue.queueDescription}</p>
-            
           </div>
         ))}
       </div>

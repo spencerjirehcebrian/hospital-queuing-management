@@ -2,7 +2,7 @@ import {useEffect, useState} from 'react'
 import { toast } from "react-toastify";
 
 import { getAuth } from "firebase/auth";
-import { addDoc, collection, serverTimestamp, query, onSnapshot } from "firebase/firestore";
+import { addDoc, collection, serverTimestamp, where, query, onSnapshot } from "firebase/firestore";
 import { db } from "../../firebase/firebase";
 import { useNavigate } from "react-router-dom";
 import TimePicker from 'react-time-picker';
@@ -18,6 +18,7 @@ export default function CreateSchedules() {
     const [endTime, setEndTime] = useState('11:00');
 
     const [assetL, setAssetL] = useState([]);
+    const [assetDoctors, setAssetDoctors] = useState([]);
 
     const [isMonday, setIsMonday] = useState(false)
     const [isTuesday, setIsTuesday] = useState(false)
@@ -26,22 +27,33 @@ export default function CreateSchedules() {
     const [isFriday, setIsFriday] = useState(false)
     const [isSaturday, setIsSaturday] = useState(false)
     const [isSunday, setIsSunday] = useState(false)
+    const [isAvailable, setIsAvailable] = useState(false)
 
     useEffect(() => {
 
       const q = query(collection(db, 'departments'))
 
-      const unsubscribe = onSnapshot(q, (snapshot) => {
+      onSnapshot(q, (snapshot) => {
         const departmentData = snapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),
         }));
        setAssetL(departmentData);
-
       });
-      return unsubscribe;
+
+      const q1 = query(collection(db, 'users'), where('isDoctor', '==', true))
+
+      onSnapshot(q1, (snapshot) => {
+        const departmentData = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        setAssetDoctors(departmentData);
+      });
+
       
     }, []);
+
     const [formData, setFormData] = useState({
         name: "",
         doctorName: "",
@@ -80,7 +92,8 @@ export default function CreateSchedules() {
             isThursday: isThursday,
             isFriday: isFriday,
             isSaturday: isSaturday,
-            isSunday: isSunday
+            isSunday: isSunday,
+            isAvailable: isAvailable
         };
      
         await addDoc(collection(db, "schedules"), formDataCopy);
@@ -92,7 +105,8 @@ export default function CreateSchedules() {
           console.log(error)
           toast.error("Schedule creation Fail\n" + error);
         }
-        //navigate(`/category/${formDataCopy.type}/${docRef.id}`);
+
+        navigate("/schedules")
     }
 
 
@@ -116,18 +130,24 @@ export default function CreateSchedules() {
         />
 
         <p className="text-lg font-semibold">Doctor Name</p>
-        <input
+        <select
           type="text"
           id="doctorName"
           value={doctorName}
           onChange={onChange}
-          placeholder="Doctor Name"
-          maxLength="32"
+
           required
           className="w-full px-4 py-2 text-lg text-gray-700 bg-white border border-gray-300 
-          rounded transition duration-150 ease-in-out focus:text-gray-700 focus:bg-white focus:border-slate-600 mb-6"
-        />
+          rounded transition duration-150 ease-in-out focus:text-gray-700 focus:bg-white focus:border-slate-600 mb-6">
+        <option className=" text-gray-400" value="" defaultValue hidden>--Select Doctor--</option>
+        {assetDoctors.map((doctor) => (
+        <>
+        <option key={doctor.id} className=" text-gray-700" value={doctor.name}>{doctor.name}</option>
+        </> 
+        ))}
+        </select>
 
+      <p className="text-lg font-semibold">Department Name</p>
       <select
         id="departmentName"
         value={departmentName}
@@ -136,7 +156,7 @@ export default function CreateSchedules() {
         className={`w-full mb-6 px-4 py-2 text-lg text-gray-500 bg-white border-gray-300 rounded transition ease-in-out
          ${departmentName|| "text-gray-700"}`}
       >
-        <option className=" text-gray-400" value="" disabled selected hidden>--Select Hospital Department--</option>
+        <option className=" text-gray-400" value="" defaultValue hidden>--Select Hospital Department--</option>
         {assetL.map((department) => (
         <>
         <option key={department.id} className=" text-gray-700" value={department.departmentName}>{department.departmentName}</option>
@@ -250,6 +270,22 @@ export default function CreateSchedules() {
           className="mr-2 leading-tight"
         />
         <span>Sunday</span>
+      </label>
+    </div>
+
+    <div className="flex flex-col mb-6">
+      <p htmlFor="time" className="text-lg font-semibold">
+      Doctor Availability
+        </p>
+      <label className="w-full sm:w-auto sm:pr-4">
+        <input
+          type="checkbox"
+          name="monday"
+          value={isAvailable}
+          onChange={()=>setIsAvailable((prevState) => !prevState)}
+          className="mr-2 leading-tight"
+        />
+        <span>Is the Doctor Available?</span>
       </label>
     </div>
 

@@ -1,11 +1,11 @@
-import {useEffect, useState } from 'react'
+import {useEffect, useState} from 'react'
 import { toast } from "react-toastify";
 import Spinner from "../../components/Spinner";
 
 import { getAuth } from "firebase/auth";
 import { addDoc, collection, serverTimestamp,query,orderBy,limit,getDocs,where, onSnapshot, doc, getDoc, Firestore, updateDoc,deleteDoc } from "firebase/firestore";
 import { app, db } from "../../firebase/firebase";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import TimePicker from 'react-time-picker';
 import 'react-time-picker/dist/TimePicker.css';
 import 'react-clock/dist/Clock.css';
@@ -21,8 +21,7 @@ import SelectScheduleList from '../../functions/SelectScheduleList';
 import SelectResourceList from '../../functions/SelectResourceList';
 
 
-export default function EditAppointment() {
-  const params =  useParams();
+export default function EditQueueModal(props) {
     const [loading, setLoading] = useState(false);
     const auth = getAuth()
     const navigate = useNavigate()
@@ -31,6 +30,9 @@ export default function EditAppointment() {
     const [newQueueNum, setNewQueueNum] = useState(0);
 
     const [startDate, setStartDate] = useState(new Date());
+    const [highestValue, setHighestValue] = useState(0)
+
+    const [checkedInState, setCheckedInState] = useState(false)
 
     const [formData, setFormData] = useState({
       queueNumber: newQueueNum,
@@ -105,8 +107,9 @@ export default function EditAppointment() {
   };
 
     useEffect(() => {
+      setLoading(true)
         async function fetchListing() {
-          const docRef = doc(db, "queue", params.appointmentID);
+          const docRef = doc(db, "queue", props.id);
 
           getDoc(docRef)
           .then((docSnap) => {
@@ -123,26 +126,36 @@ export default function EditAppointment() {
                 const snapshotdata1 = snapshot.docs.map((doc) => ({
                   id: doc.id,
                 }));
+
+                if (snapshotdata.queueStatus != 'Checked In'){
+                  setCheckedInState(false)
+                }
+                else {
+                  setCheckedInState(true)
+                }
+
               
                 setDataArray(snapshotdata);
                 setIdArray(snapshotdata1)
+                setLoading(false);
                
               });
 
             } else {
-              navigate("/appointments")
+              props.closeModifyModal()
               toast.error("Queue does not exist");
               setLoading(false);
             }
           })
           .catch((error) => {
+            props.closeModifyModal()
             toast.error('Error fetching1 document:', error);
             setLoading(false);
           });
         }
 
         fetchListing();
-      }, [navigate, params.appointmentID]);
+      }, [navigate, props.id]);
 
     useEffect(() => {
         if (scheduleID) {
@@ -226,7 +239,29 @@ export default function EditAppointment() {
       console.log(formattedDate)
     }
 
+    async function getArrayOfField() {
+      const collectionName = "queue";
+      const fieldToRetrieve = "waitingQueueNumber"; 
+
+      const q = query(
+      collection(db, collectionName)
+      );
+      
+      const querySnapshot = await getDocs(q);
+  
+      const fieldValues = querySnapshot.docs.map((doc) => doc.data()[fieldToRetrieve]);
+      console.log(fieldValues)
+      setLoading(false)
+
+      const filteredArray = fieldValues.filter((value) => {
+        return value !== undefined && !isNaN(value);
+      });
+      setHighestValue((Math.max(...filteredArray)));
+      return filteredArray;
+  }
+
     async function onSubmit(e) {
+      setLoading(true);
         e.preventDefault();
 
         for (const idElemet of idArray) {
@@ -234,15 +269,38 @@ export default function EditAppointment() {
           await deleteDoc(documentRef);
         }
 
-        setLoading(true);
+        const fieldValues = []
+
+        const q = query(
+          collection(db, "queue")
+          );  
+ 
+        getDocs(q)
+        .then((querySnapshot) => {
+          querySnapshot.docs.forEach((doc) => {
+            fieldValues.push(doc.data().waitingQueueNumber);
+          });
+          const integersOnly = fieldValues.filter((value) => Number.isInteger(value));
+
+          const maxQueueingNumber = (Math.max(...integersOnly)) + 1
+
+          var formDataCopy= {...formData};
+
+          if (queueStatus == 'Checked In' && checkedInState == true){
+            console.log("trigger")
+            formDataCopy.waitingQueueNumber = maxQueueingNumber;
+            formDataCopy.timeCheckIn = serverTimestamp();
+          }
+        
+        
         try {
-          const documentRef = doc(db, 'queue', params.appointmentID);
-          updateDoc(documentRef, formData)
+          const documentRef = doc(db, 'queue', props.id);
+          updateDoc(documentRef, formDataCopy)
             .then((docRef) => {
               dataArray.forEach(async (element) => {
 
                 const updatedElement = { ...element,
-                  billAppointmentID: params.appointmentID,
+                  billAppointmentID: props.id,
                   billAppointmentDate: queueDate,
                   billPatientName: patientName,
                   billPatientEmail: patientEmail,};
@@ -253,12 +311,13 @@ export default function EditAppointment() {
                 .catch((error) => {
                   toast.error('Error adding document:', error);
                   console.error('Error adding document:', error);
+                  props.closeModifyModal()
                 });
               });
 
-              toast.success("Appointment Created");
+              toast.success("Appointment Modified");
               setLoading(false);
-              navigate("/appointments")
+              props.closeModifyModal()
 
             })
             .catch((error) => {
@@ -272,6 +331,11 @@ export default function EditAppointment() {
           toast.error("Changes Failed\n" + error);
           setLoading(false);
         }
+
+      })
+      .catch((error) => {
+        console.error("Error getting documents:", error);
+      });
     }
 
     async function onDelete() {
@@ -283,10 +347,10 @@ export default function EditAppointment() {
         }
         
         try {
-            const documentRef = doc(db, 'queue', params.appointmentID);
+            const documentRef = doc(db, 'queue', props.id);
             await deleteDoc(documentRef);
               toast.success("Removed");
-              navigate("/appointments")
+              props.closeModifyModal()
               setLoading(false);
             }catch (error){
               toast.error("Error deleting document: ", error);
@@ -354,11 +418,9 @@ export default function EditAppointment() {
       }
       return (
         <>
-        <main className="max-w-[80%] px-2 mx-auto">
-        <h1 className="text-3xl text-center mt-10 font-bold">Edit Appointment</h1>
-      <p className='text-1xl text-center mt-3 font-semibold'></p>
+        <main className="max-w-full px-2 mx-auto">
             <form>
-            <div className='flex flex-col-2 gap-14'>
+            <div className='flex flex-col-2 gap-3'>
               <div className='flex-1'>
     
             <p className="text-lg mt-6 font-semibold">Queue Number</p>
@@ -434,6 +496,16 @@ export default function EditAppointment() {
               rounded transition duration-150 ease-in-out focus:text-gray-700 focus:bg-white focus:border-slate-600 mb-6"
             />
     
+    <button
+         type="button"
+         onClick={openPatientModal}
+          className="mb-6 w-full px-7 py-2 bg-green-700 text-white font-medium text-sm uppercase rounded shadow-md
+            hover:bg-green-800 hover:shadow-lg focus:bg-green-800 focus:shadow-lg
+            active:bg-green-950 active:shadow-lg transition duration-150 ease-in-out"
+            >
+    
+          Select Patient
+        </button>
     
     </div>
     <div className="border border-gray-400 px-4 py-3 rounded-lg mb-5" >
@@ -606,6 +678,23 @@ export default function EditAppointment() {
               className="w-full px-4 py-2 text-lg text-gray-700 bg-white border border-gray-300 
               rounded transition duration-150 ease-in-out focus:text-gray-700 focus:bg-white focus:border-slate-600 mb-6"
             />
+    
+            <p className="text-lg font-semibold">Queue Status</p>
+            <p className="text-sm ">Note: Will update timestaps for Check In Status only. Complete Statuses set here will not be counted in the reports. Only those done in the Queue pages will be counted.</p>   
+            <select
+            id="queueStatus"
+            value={queueStatus}
+            onChange={onChange}
+            className={`w-full mb-6 px-4 py-2 text-lg text-gray-500 bg-white border-gray-300 rounded transition ease-in-out
+             `}
+          >
+            <option className=" text-gray-400" value="" disabled defaultValue hidden>--Please choose a Status--</option>
+            <option className=" text-gray-700" value="Pending">Pending</option>
+            <option className=" text-gray-700" value="Set">Set</option>
+            <option className=" text-gray-700" value="Checked In">Checked In</option>
+            <option className=" text-gray-700" value="Completed">Completed</option>
+            <option className=" text-gray-700" value="Missed">Missed</option>
+          </select>
             
           
           </div>

@@ -2,10 +2,9 @@ import {useEffect, useState} from 'react'
 import { toast } from "react-toastify";
 
 import { getAuth } from "firebase/auth";
-import { addDoc, collection, serverTimestamp, query, where, getDocs, doc, getDoc, deleteDoc } from "firebase/firestore";
+import { addDoc, updateDoc, collection, serverTimestamp, query, where, getDocs, doc, getDoc, deleteDoc } from "firebase/firestore";
 import { db } from "../../firebase/firebase";
 import { useNavigate, useParams } from "react-router-dom";
-import TimePicker from 'react-time-picker';
 import 'react-time-picker/dist/TimePicker.css';
 import 'react-clock/dist/Clock.css';
 
@@ -16,7 +15,7 @@ import { XIcon } from '@heroicons/react/outline';
 import SelectPatientList from '../../functions/SelectPatientList';
 import SelectQueueList from '../../functions/SelectQueueList';
 
-export default function CreateBills() {
+export default function EditBills() {
     const [loading, setLoading] = useState(false);
     const auth = getAuth()
     const navigate = useNavigate()
@@ -83,12 +82,13 @@ export default function CreateBills() {
         e.preventDefault();
         setLoading(true);
 
-
         try {
-
-        await addDoc(collection(db, "bills"), formData);
+          const docRef = doc(db, "bills", params.billID);
+          await updateDoc(docRef, {
+            ...formData,
+          });
         setLoading(false);
-        toast.success("Customer Charged");
+        toast.success("Billing Details Saved");
         navigate("/billing")
         }
 

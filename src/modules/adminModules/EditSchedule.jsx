@@ -3,7 +3,7 @@ import { toast } from "react-toastify";
 import Spinner from "../../components/Spinner";
 
 import { getAuth } from "firebase/auth";
-import { addDoc, collection, serverTimestamp, doc, updateDoc, getDoc, deleteDoc, query, onSnapshot} from "firebase/firestore";
+import { addDoc, collection, serverTimestamp, where, doc, updateDoc, getDoc, deleteDoc, query, onSnapshot} from "firebase/firestore";
 import { db } from "../../firebase/firebase";
 import { useNavigate, useParams } from "react-router-dom";
 import TimePicker from 'react-time-picker';
@@ -17,6 +17,7 @@ export default function EditSchedules() {
 
     const [schedules, setSchedules] = useState(null);
     const [assetL, setAssetL] = useState([]);
+    const [assetDoctors, setAssetDoctors] = useState([]);
 
     const params =  useParams();
     
@@ -38,7 +39,7 @@ export default function EditSchedules() {
 
       const q = query(collection(db, 'departments'))
 
-      const unsubscribe = onSnapshot(q, (snapshot) => {
+      onSnapshot(q, (snapshot) => {
         const departmentData = snapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),
@@ -46,7 +47,17 @@ export default function EditSchedules() {
        setAssetL(departmentData);
 
       });
-      return unsubscribe;
+      
+      const q1 = query(collection(db, 'users'), where('isDoctor', '==', true))
+
+      onSnapshot(q1, (snapshot) => {
+        const departmentData = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        setAssetDoctors(departmentData);
+      });
+
  
       }
       fetchListing();
@@ -64,7 +75,8 @@ export default function EditSchedules() {
         isThursday: false,
         isFriday: false,
         isSaturday: false,
-        isSunday: false
+        isSunday: false,
+        isAvailable: false
       });
 
     const {
@@ -79,7 +91,8 @@ export default function EditSchedules() {
         isThursday,
         isFriday,
         isSaturday,
-        isSunday
+        isSunday,
+        isAvailable
     } = formData;
 
     const handleStartTimeChange = (time) => {
@@ -172,17 +185,22 @@ export default function EditSchedules() {
         />
 
         <p className="text-lg font-semibold">Doctor Name</p>
-        <input
+        <select
           type="text"
           id="doctorName"
           value={doctorName}
           onChange={onChange}
-          placeholder="Doctor Name"
-          maxLength="32"
+
           required
           className="w-full px-4 py-2 text-lg text-gray-700 bg-white border border-gray-300 
-          rounded transition duration-150 ease-in-out focus:text-gray-700 focus:bg-white focus:border-slate-600 mb-6"
-        />
+          rounded transition duration-150 ease-in-out focus:text-gray-700 focus:bg-white focus:border-slate-600 mb-6">
+        <option className=" text-gray-400" value="" defaultValue hidden>--Select Doctor--</option>
+        {assetDoctors.map((doctor) => (
+        <>
+        <option key={doctor.id} className=" text-gray-700" value={doctor.name}>{doctor.name}</option>
+        </> 
+        ))}
+        </select>
         
       <select
         id="departmentName"
@@ -313,6 +331,23 @@ export default function EditSchedules() {
           className="mr-2 leading-tight"
         />
         <span>Sunday</span>
+      </label>
+    </div>
+
+    <div className="flex flex-col mb-6">
+      <p htmlFor="time" className="text-lg font-semibold">
+      Doctor Availability
+        </p>
+      <label className="w-full sm:w-auto sm:pr-4">
+        <input
+          type="checkbox"
+          name="monday"
+          checked={isAvailable}
+          value={isAvailable}
+          onChange={onChange}
+          className="mr-2 leading-tight"
+        />
+        <span>Is the Doctor Available?</span>
       </label>
     </div>
 

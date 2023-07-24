@@ -156,7 +156,7 @@ export default function Profile() {
             className={`w-full mb-6 px-4 py-2 text-lg text-gray-500 bg-white border-gray-300 rounded transition ease-in-out
                 ${sex|| "text-gray-700"}`}
             >
-            <option className=" text-gray-400" value="" disabled selected hidden>--Please choose a Sex--</option>
+            <option className=" text-gray-400" value="" disabled defaultValue hidden>--Please choose a Sex--</option>
             <option className=" text-gray-700" value="male">Male</option>
             <option className=" text-gray-700" value="female">Female</option>
             </select>

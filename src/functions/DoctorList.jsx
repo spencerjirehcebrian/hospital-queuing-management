@@ -15,13 +15,13 @@ function DoctorList() {
     useEffect(() => {
      
       if (searchTerm){
-
+        
         const q = searchTerm
           ? query(
               collection(db, 'users'),
+              where('isDoctor', '==', true),
               where('name', '>=', searchTerm),
-              where('name', '<=', searchTerm + '\uf8ff'),
-              where('isDoctor', '==', true)
+              where('name', '<=', searchTerm + '\uf8ff')
             )
           : collection(db, 'users', orderBy('name'));
     
@@ -39,8 +39,8 @@ function DoctorList() {
       } else {
 
         const q = query(
-            collection(db, 'users'),
-            where('isDoctor', '==', true)
+            collection(db, 'users'),where('isDoctor', '==', true)
+
           )
   
       const unsubscribe = onSnapshot(q, (snapshot) => {
@@ -64,8 +64,9 @@ function DoctorList() {
   }
   return (
 <div className="container mx-auto p-4">
+<hr className="border border-gray-300 mb-10"></hr>
 
-      <div className="mb-4">
+      {/* <div className="mb-4">
         <label htmlFor="search" className="sr-only">
           Search
         </label>
@@ -77,7 +78,7 @@ function DoctorList() {
           value={searchTerm}
           onChange={handleSearch}
         />
-      </div>
+      </div> */}
 
       <div className="grid grid-cols-1 gap-4">
         {doctors.map((doctor) => (

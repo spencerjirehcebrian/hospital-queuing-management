@@ -63,7 +63,7 @@ function ScheduleList() {
           type="text"
           id="search"
           className="w-full px-4 py-2 rounded-lg shadow"
-          placeholder="Search by schedule name"
+          placeholder="Search by schedule name (case-sensitive)"
           value={searchTerm}
           onChange={handleSearch}
         />
@@ -78,6 +78,7 @@ function ScheduleList() {
             <p><span className="font-semibold">Doctor Name: </span> {schedule.doctorName}</p>
             <p><span className="font-semibold">Department: </span> {schedule.departmentName}</p>
             <p><span className="font-semibold">Time Slot</span>: {schedule.startTime} - {schedule.endTime}</p>
+            <p><span className="font-semibold">Doctor Availiable: </span> {schedule.isAvailable ? "Yes" : "No"}</p>
             <span className="font-semibold">Days Availiable: </span> 
             <span className={schedule.isSunday ? "text-green-600 font-bold" : "text-gray-400 "}>Sun </span>
             <span className={schedule.isMonday ? "text-green-600 font-bold" : "text-gray-400 "} >Mon </span>

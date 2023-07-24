@@ -73,7 +73,7 @@ function PatientList() {
           type="text"
           id="search"
           className="w-full px-4 py-2 rounded-lg shadow"
-          placeholder="Search by patient name"
+          placeholder="Search by patient name (case-sensitive)"
           value={searchTerm}
           onChange={handleSearch}
         />

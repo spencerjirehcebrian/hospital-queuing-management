@@ -53,34 +53,36 @@ export default function EditDoctorSchedule() {
     }, [navigate, params.doctorscheduleID]);
 
     const [formData, setFormData] = useState({
-        name: "",
-        doctorName: "",
-        startTime: '',
-        endTime: '',
-        departmentName: '',
-        isMonday: false,
-        isTuesday: false,
-        isWednesday: false,
-        isThursday: false,
-        isFriday: false,
-        isSaturday: false,
-        isSunday: false
-      });
+      name: "",
+      doctorName: "",
+      startTime: '',
+      endTime: '',
+      departmentName: '',
+      isMonday: false,
+      isTuesday: false,
+      isWednesday: false,
+      isThursday: false,
+      isFriday: false,
+      isSaturday: false,
+      isSunday: false,
+      isAvailable: false
+    });
 
-    const {
-        name,
-        doctorName,
-        startTime,
-        endTime,
-        departmentName,
-        isMonday,
-        isTuesday,
-        isWednesday,
-        isThursday,
-        isFriday,
-        isSaturday,
-        isSunday
-    } = formData;
+  const {
+      name,
+      doctorName,
+      startTime,
+      endTime,
+      departmentName,
+      isMonday,
+      isTuesday,
+      isWednesday,
+      isThursday,
+      isFriday,
+      isSaturday,
+      isSunday,
+      isAvailable
+  } = formData;
 
     const handleStartTimeChange = (time) => {
       setFormData((prevState) => ({
@@ -180,6 +182,7 @@ export default function EditDoctorSchedule() {
           placeholder="Doctor Name"
           maxLength="32"
           required
+          readOnly
           className="w-full px-4 py-2 text-lg text-gray-700 bg-white border border-gray-300 
           rounded transition duration-150 ease-in-out focus:text-gray-700 focus:bg-white focus:border-slate-600 mb-6"
         />
@@ -313,6 +316,23 @@ export default function EditDoctorSchedule() {
           className="mr-2 leading-tight"
         />
         <span>Sunday</span>
+      </label>
+    </div>
+
+    <div className="flex flex-col mb-6">
+      <p htmlFor="time" className="text-lg font-semibold">
+      Doctor Availability
+        </p>
+      <label className="w-full sm:w-auto sm:pr-4">
+        <input
+          type="checkbox"
+          name="monday"
+          checked={isAvailable}
+          value={isAvailable}
+          onChange={onChange}
+          className="mr-2 leading-tight"
+        />
+        <span>Is the Doctor Available?</span>
       </label>
     </div>
 

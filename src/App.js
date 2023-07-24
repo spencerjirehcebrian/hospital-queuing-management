@@ -1,10 +1,11 @@
 
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+
 import Home from './modules/publicModules/Home';
 import SignIn from './modules/publicModules/SignIn';
 import SignUp from './modules/publicModules/SignUp';
 import Profile from './modules/publicModules/Profile';
-import Header from './components/Header';
+import Test from './modules/publicModules/Test';
 
 import PrivateRoute from './components/PrivateRoute';
 import AdminRoute from './components/AdminRoute';
@@ -12,6 +13,8 @@ import DoctorRoute from './components/DoctorRoute';
 
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import Header from './components/Header';
+import Sidebar from './components/Sidebar';
 
 import Schedules from './modules/adminModules/Schedules';
 import CreateSchedules from './modules/adminModules/CreateSchedule';
@@ -29,9 +32,11 @@ import Doctors from './modules/adminModules/Doctors';
 import CreateDoctors from './modules/adminModules/CreateDoctors';
 import EditDoctors from './modules/adminModules/EditDoctors';
 
+import Departments from './modules/adminModules/Departments';
+import Resources from './modules/adminModules/Resources';
+
 import Queue from './modules/adminModules/Queue';
-import CreateQueue from './modules/adminModules/CreateQueue';
-import EditQueue from './modules/adminModules/EditQueue';
+
 import CreateAppointment from './modules/patientModules/CreateAppointment';
 import Appointments from './modules/patientModules/Appointments';
 import PatientHistory from './modules/patientModules/PatientHistory';
@@ -43,6 +48,7 @@ import ShowStatementOfAccount from './modules/patientModules/ShowStatementOfAcco
 import CheckIn from './modules/patientModules/CheckIn';
 
 import WaitingQueue from './modules/adminModules/WaitingQueue';
+import ServiceQueue from './modules/adminModules/ServiceQueue';
 
 import DoctorSchedule from './modules/doctorModules/DoctorSchedule';
 import CreateDoctorSchedule from './modules/doctorModules/CreateDoctorSchedule';
@@ -53,9 +59,17 @@ import DoctorAppointment from './modules/doctorModules/DoctorAppointments';
 import Report from './modules/adminModules/Report';
 
 import { Helmet } from 'react-helmet';
+import {useState} from 'react';
 
 
 function App() {
+
+  const [isSidebarExpanded, setSidebarExpanded] = useState(false);
+
+  const handleSidebarToggle = () => {
+    setSidebarExpanded(!isSidebarExpanded);
+  };
+
   return (
     <>
     <Helmet>
@@ -63,13 +77,20 @@ function App() {
       </Helmet>
 
       <Router>
-        <Header/>
+      {/* <Header/> */}
+      <div className="flex">
+        <div className="fixed top-0 h-screen z-10">
+        <Sidebar handleSidebarToggle={handleSidebarToggle}/>
+        </div>
+        
+        <div className={`flex-grow ${isSidebarExpanded ? 'brightness-75 backdrop-brightness-75 pointer-events-none' : ''}`}>
         <Routes>
 
           {/* Any User */}
           <Route path="/" element={<Home/>}/>
           <Route path="/sign-in" element={<SignIn/>}/>
           <Route path="/sign-up" element={<SignUp/>}/>
+          <Route path="/test" element={<Test/>}/>
 
           {/* Login */}
           <Route path='/profile' element={<PrivateRoute />}><Route path="/profile" element={<Profile/>}/></Route>
@@ -108,12 +129,9 @@ function App() {
           <Route path="/edit-bills/:billID" element={<AdminRoute />}><Route path="/edit-bills/:billID" element={<EditBills/>}/></Route>
 
           <Route path="/queue" element={<AdminRoute />}><Route path="/queue" element={<Queue/>}/></Route>
-          <Route path="/create-queue" element={<AdminRoute />}><Route path="/create-queue" element={<CreateQueue/>}/></Route>
-          <Route path="/edit-queue/:queueID" element={<AdminRoute />}><Route path="/edit-queue/:queueID" element={<EditQueue/>}/></Route>
           
-         <Route path="/waiting-queue" element={<AdminRoute />}><Route path="/waiting-queue" element={<WaitingQueue/>}/></Route>
-          <Route path="/create-queue" element={<AdminRoute />}><Route path="/create-queue" element={<CreateQueue/>}/></Route>
-          <Route path="/edit-queue/:queueID" element={<AdminRoute />}><Route path="/edit-queue/:queueID" element={<EditQueue/>}/></Route>
+          <Route path="/waiting-queue" element={<AdminRoute />}><Route path="/waiting-queue" element={<WaitingQueue/>}/></Route>
+          <Route path="/service-queue" element={<AdminRoute />}><Route path="/service-queue" element={<ServiceQueue/>}/></Route>
 
           <Route path="/doctors" element={<AdminRoute />}><Route path="/doctors" element={<Doctors/>}/></Route>
           <Route path="/create-doctor" element={<AdminRoute />}><Route path="/create-doctor" element={<CreateDoctors/>}/></Route>
@@ -121,9 +139,14 @@ function App() {
 
           <Route path="/report" element={<AdminRoute />}><Route path="/report" element={<Report/>}/></Route>
 
+          <Route path="/departments" element={<AdminRoute />}><Route path="/departments" element={<Departments/>}/></Route>
+          <Route path="/resources" element={<AdminRoute />}><Route path="/resources" element={<Resources/>}/></Route>
 
     
         </Routes>
+
+        </div>
+        </div>
       </Router>
       <ToastContainer
         position="bottom-right"

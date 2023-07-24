@@ -26,6 +26,7 @@ export default function CreateDoctorSchedule() {
     const [isFriday, setIsFriday] = useState(false)
     const [isSaturday, setIsSaturday] = useState(false)
     const [isSunday, setIsSunday] = useState(false)
+    const [isAvailable, setIsAvailable] = useState(false)
 
     useEffect(() => {
 
@@ -94,17 +95,18 @@ export default function CreateDoctorSchedule() {
          throw new Error("Start Time Should be Less than End Time")
         }
         const formDataCopy = {
-            ...formData,
-            startTime: startTime,
-            endTime: endTime,
-            isMonday: isMonday,
-            isTuesday: isTuesday,
-            isWednesday: isWednesday, 
-            isThursday: isThursday,
-            isFriday: isFriday,
-            isSaturday: isSaturday,
-            isSunday: isSunday
-        };
+          ...formData,
+          startTime: startTime,
+          endTime: endTime,
+          isMonday: isMonday,
+          isTuesday: isTuesday,
+          isWednesday: isWednesday, 
+          isThursday: isThursday,
+          isFriday: isFriday,
+          isSaturday: isSaturday,
+          isSunday: isSunday,
+          isAvailable: isAvailable
+      };
      
         await addDoc(collection(db, "schedules"), formDataCopy);
         setLoading(false);
@@ -274,6 +276,22 @@ export default function CreateDoctorSchedule() {
           className="mr-2 leading-tight"
         />
         <span>Sunday</span>
+      </label>
+    </div>
+
+    <div className="flex flex-col mb-6">
+      <p htmlFor="time" className="text-lg font-semibold">
+      Doctor Availability
+        </p>
+      <label className="w-full sm:w-auto sm:pr-4">
+        <input
+          type="checkbox"
+          name="monday"
+          value={isAvailable}
+          onChange={()=>setIsAvailable((prevState) => !prevState)}
+          className="mr-2 leading-tight"
+        />
+        <span>Is the Doctor Available?</span>
       </label>
     </div>
 

@@ -8,7 +8,7 @@ import {
   updateProfile,
 } from "firebase/auth";
 import { db } from "../../firebase/firebase";
-import { doc, serverTimestamp, setDoc } from "firebase/firestore";
+import { doc, serverTimestamp, addDoc, setDoc, collection } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import Spinner from "../../components/Spinner";
@@ -23,6 +23,7 @@ export default function SignUp() {
     sex: "",
     email: "",
     password: "",
+    age: ""
   });
 
   const [showPassword, setShowPassword] = useState(false);
@@ -36,6 +37,18 @@ function onChange(e) {
 }
 
 const navigate = useNavigate()
+
+function getAge(dateString) {
+  var today = new Date();
+  var birthDate = new Date(dateString);
+  var age = today.getFullYear() - birthDate.getFullYear();
+  var m = today.getMonth() - birthDate.getMonth();
+  if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+      age--;
+  }
+  return age;
+}
+
 
 async function onSubmit(e) {
   e.preventDefault();
@@ -60,6 +73,7 @@ async function onSubmit(e) {
     formDataCopy.isPatient = true;
     formDataCopy.isCheckedIn = true;
     formDataCopy.isDoctor = false;
+    formDataCopy.age = getAge(dob);
 
     await setDoc(doc(db, "users", id.uid), formDataCopy);
     setLoading(false)
@@ -71,6 +85,7 @@ async function onSubmit(e) {
     console.log(error);
     setLoading(false)
     toast.error("Something went wrong");
+    console.error("Something went wrong" + error)
   }
 }
 
@@ -84,7 +99,7 @@ if (loading) {
   return (
 <section>
 
-  <h1 className='text-3xl text-center mt-6 font-bold'>Sign Up</h1>
+  <h1 className='text-3xl text-center mt-20 font-bold'>Sign Up</h1>
   <div className='flex justify-center flex-wrap items-center px-6 py-12 max-w-6xl mx-auto'>
     <div className='md:w-[67%] lg:w-[50%] mb-12 md:mb-6'>
       <img src="https://images.unsplash.com/photo-1526256262350-7da7584cf5eb?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80"
